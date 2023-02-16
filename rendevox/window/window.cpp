@@ -1,4 +1,4 @@
-#include "rendevox.hpp"
+#include "../rendevox.hpp"
 
 Window::Window(const char* _renderType, int _width, int _height, const char* _title, bool _fullscreen) {
 	renderType = _renderType;

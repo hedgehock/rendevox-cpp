@@ -22,7 +22,9 @@ elseif(WIN32)
     link_libraries(mingw32 Vulkan::Vulkan glfw3 glu32 opengl32 gdi32 m)
 endif()
 
-file(GLOB SRC *.cpp)
+file(GLOB SRC window/window.cpp
+                openglWindow/openglWindow.cpp
+                glad/glad.cpp)
 
 add_library(rendevoxlib STATIC ${SRC})
 

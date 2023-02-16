@@ -1,4 +1,4 @@
-#include "openglWindow.hpp"
+#include "../rendevox.hpp"
 
 OpenglWindow::OpenglWindow(Window* _window) {
 	window = _window;
