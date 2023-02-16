@@ -1,7 +1,7 @@
 #ifndef OPENGLWINDOW_HPP
 #define OPENGLWINDOW_HPP
 
-#include "../glad/glad.h"
+#include "../glad/glad.hpp"
 #include <GLFW/glfw3.h>
 
 #include "../window/window.hpp"
