@@ -1,7 +1,7 @@
 #include "../rendevox/rendevox.hpp"
 
 int main() {
-	std::cout << "Hello world\n";
+	Window window = Window("OpenGL", 1280, 720, "RVX", false);
 
 	return 0;
 }
