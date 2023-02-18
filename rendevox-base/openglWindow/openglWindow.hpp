@@ -8,9 +8,9 @@
 
 class OpenglWindow {
 private:
-	Window *window;
+	Window* window;
 
-	GLFWwindow *glfwWindow;
+	GLFWwindow* glfwWindow;
 	const char* vertexShaderSource;
 	const char* fragmentShaderSource;
 
@@ -20,7 +20,7 @@ private:
 	void CompileShaders();
 	void Loop();
 public:
-	OpenglWindow(Window *_window);
+	OpenglWindow(Window& window);
 };
 
 #endif

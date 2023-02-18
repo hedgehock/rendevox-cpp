@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_C_FLAGS "-O3")
 
-include_directories(include)
-
 if (APPLE)
     include_directories(/usr/local/include)
     link_directories(/usr/local/lib)
@@ -22,12 +20,12 @@ elseif(WIN32)
     link_libraries(mingw32 Vulkan::Vulkan glfw3 glu32 opengl32 gdi32 m)
 endif()
 
-file(GLOB SRC window/window.cpp
-                openglWindow/openglWindow.cpp
-                glad/glad.cpp)
+file(GLOB SRC rendevox-base/window/window.cpp
+        rendevox-base/openglWindow/openglWindow.cpp
+        rendevox-base/glad/glad.cpp)
 
 add_library(rendevoxlib STATIC ${SRC})
 
-add_executable(rendevox ../app/main.cpp)
+add_executable(rendevox app/main.cpp)
 
 target_link_libraries(rendevox rendevoxlib)

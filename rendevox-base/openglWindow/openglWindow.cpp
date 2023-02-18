@@ -1,7 +1,7 @@
-#include "../rendevox.hpp"
+#include "../rendevox-base.hpp"
 
-OpenglWindow::OpenglWindow(Window* _window) {
-	window = _window;
+OpenglWindow::OpenglWindow(Window& window) {
+	this->window = &window;
     
     vertexShaderSource = "#version 330 core\n"
                           "layout (location = 0) in vec3 aPos;\n"

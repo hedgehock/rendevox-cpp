@@ -1,4 +1,4 @@
-#include "../rendevox/rendevox.hpp"
+#include "../rendevox-base/rendevox-base.hpp"
 
 int main() {
 	Window window = Window("OpenGL", 1280, 720, "RVX", false);

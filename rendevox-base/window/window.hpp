@@ -2,6 +2,7 @@
 #define WINDOW_HPP
 
 #include <iostream>
+#include <string>
 
 class Window {
 public:
@@ -11,7 +12,7 @@ public:
 	
 	const char* title;
 	bool fullscreen;
-	Window(const char* renderType, int _width, int _height, const char* _title, bool _fullscreen);
+	Window(const char* renderType, int width, int height, const char* title, bool fullscreen);
 };
 
 #endif
