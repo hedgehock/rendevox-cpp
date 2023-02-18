@@ -7,20 +7,18 @@
 #include "../window/window.hpp"
 
 class OpenglWindow {
-private:
-	Window* window;
-
+public:
+	Rendevox::Window* window;
 	GLFWwindow* glfwWindow;
 	const char* vertexShaderSource;
 	const char* fragmentShaderSource;
-
 	unsigned int shaderProgram;
 
+    OpenglWindow(Rendevox::Window& window);
+    ~OpenglWindow();
 	void Create();
 	void CompileShaders();
 	void Loop();
-public:
-	OpenglWindow(Window& window);
 };
 
 #endif

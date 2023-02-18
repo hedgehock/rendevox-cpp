@@ -1,6 +1,6 @@
 #include "../rendevox-base.hpp"
 
-Window::Window(const char* renderType, int width, int height, const char* title, bool fullscreen) {
+Rendevox::Window::Window(const char* renderType, int width, int height, const char* title, bool fullscreen) {
 	this->renderType = renderType;
 	this->width = width;
 	this->height = height;

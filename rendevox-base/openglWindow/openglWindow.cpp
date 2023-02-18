@@ -1,29 +1,38 @@
 #include "../rendevox-base.hpp"
 
-OpenglWindow::OpenglWindow(Window& window) {
+OpenglWindow::OpenglWindow(Rendevox::Window& window) {
 	this->window = &window;
     
     vertexShaderSource = "#version 330 core\n"
-                          "layout (location = 0) in vec3 aPos;\n"
-                          "void main()\n"
-                          "{\n"
-                          "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                          "}\0";
+                         "layout (location = 0) in vec3 aPos;\n"
+                         "layout (location = 1) in vec3 aColor;\n"
+                         "out vec3 ourColor;\n"
+                         "void main()\n"
+                         "{\n"
+                         "   gl_Position = vec4(aPos, 1.0);\n"
+                         "   ourColor = aColor;\n"
+                         "}\0";
 
     fragmentShaderSource = "#version 330 core\n"
-                            "out vec4 FragColor;\n"
-                            "uniform vec4 vertexColor;\n"
-                            "void main()\n"
-                            "{\n"
-                            "   FragColor = vertexColor;\n"
-                            "}\n\0";
+                           "out vec4 FragColor;\n"
+                           "in vec3 ourColor;\n"
+                           "void main()\n"
+                           "{\n"
+                           "   FragColor = vec4(ourColor, 1.0f);\n"
+                           "}\n\0";
 
     Create();
     CompileShaders();
     Loop();
 }
 
+OpenglWindow::~OpenglWindow() {
+    glDeleteProgram(shaderProgram);
+}
+
 void OpenglWindow::Loop() {
+    OpenglRender openglRender = OpenglRender(*this);
+
     while (!glfwWindowShouldClose(glfwWindow)) {
         // Render Start
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -31,8 +40,7 @@ void OpenglWindow::Loop() {
 
         glUseProgram(shaderProgram);
 
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "vertexColor");
-        glUniform4f(vertexColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
+        openglRender.Draw();
 
         // Render End
         glfwSwapBuffers(glfwWindow);

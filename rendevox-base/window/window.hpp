@@ -4,15 +4,17 @@
 #include <iostream>
 #include <string>
 
-class Window {
-public:
-	const char* renderType;
-	int width;
-	int height;
-	
-	const char* title;
-	bool fullscreen;
-	Window(const char* renderType, int width, int height, const char* title, bool fullscreen);
-};
+namespace Rendevox {
+    class Window {
+    public:
+        const char* renderType;
+        int width;
+        int height;
+
+        const char* title;
+        bool fullscreen;
+        Window(const char* renderType, int width, int height, const char* title, bool fullscreen);
+    };
+}
 
 #endif
