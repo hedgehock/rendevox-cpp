@@ -1,5 +1,13 @@
 # Rendevox
 
+## Structure
+
+- ##### app `User's functions`
+- ##### rendevox-base `Core of rendevox`, 
+  - ##### includes 
+    - `Windowing`
+    - `2D Rendering`
+    - `Text Rendering`
 ## Dependencies
 
 #### Install for Windows via [MSYS2](https://repo.msys2.org/distrib/x86_64/) latest version
@@ -17,10 +25,10 @@ $ pacman -S mingw-w64-x86_64-vulkan-devel
 - Vulkan
 
 ## Features
-- 3D rendering
+- 2D & 3D rendering
 - text rendering
-- collision detection
 - basic physics
+- audio playback
 
 ## Template
 
