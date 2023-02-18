@@ -1,35 +1,5 @@
 # Rendevox
 
-## Structure
-
-- ##### app `User's functions`
-- ##### rendevox-base `Core of rendevox`, 
-  - ##### includes 
-    - `Windowing`
-    - `2D Rendering`
-    - `Text Rendering`
-## Dependencies
-
-#### Install for Windows via [MSYS2](https://repo.msys2.org/distrib/x86_64/) latest version
-```shell
-$ pacman -S mingw-w64-x86_64-toolchain
-$ pacman -S mingw-w64-x86_64-cmake
-$ pacman -S mingw-w64-x86_64-glfw
-$ pacman -S mingw-w64-x86_64-vulkan-devel
-```
-
-- C++17 compiler
-- C++ standard libraries
-- CMake
-- Glfw
-- Vulkan
-
-## Features
-- 2D & 3D rendering
-- text rendering
-- basic physics
-- audio playback
-
 ## Template
 
 ### RVX Quad
@@ -61,6 +31,36 @@ void UserUpdate() {
 }
 
 ```
+
+## Structure
+
+- ##### app `User's functions`
+- ##### rendevox-base `Core of rendevox`, 
+  - ##### includes 
+    - `Windowing`
+    - `2D Rendering`
+    - `Text Rendering`
+## Dependencies
+
+#### Install for Windows via [MSYS2](https://repo.msys2.org/distrib/x86_64/) latest version
+```shell
+$ pacman -S mingw-w64-x86_64-toolchain
+$ pacman -S mingw-w64-x86_64-cmake
+$ pacman -S mingw-w64-x86_64-glfw
+$ pacman -S mingw-w64-x86_64-vulkan-devel
+```
+
+- C++17 compiler
+- C++ standard libraries
+- CMake
+- Glfw
+- Vulkan
+
+## Features
+- 2D & 3D rendering
+- text rendering
+- basic physics
+- audio playback
 
 ## How to run
 
