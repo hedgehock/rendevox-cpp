@@ -4,7 +4,7 @@
 
 ### RVX Quad
 
-![img.png](img.png)
+![img.png](rvxquad.png)
 
 ```cpp
 #include "../rendevox-base/rendevox-base.hpp"
