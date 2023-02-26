@@ -1,14 +1,12 @@
 #include "vulkanWindow.hpp"
 
-vk::UniqueInstance VulkanWindow::instance;
-
 VulkanWindow::VulkanWindow(Rendevox::Window& window) {
     VulkanWindow::createInstance();
 
     VulkanWindow::~VulkanWindow();
 }
 
-VulkanWindow::createInstace() {
+void VulkanWindow::createInstance() {
     VulkanWindow::instance = vk::createInstanceUnique (
         vk::InstanceCreateInfo {
             vk::InstanceCreateFlags(),
