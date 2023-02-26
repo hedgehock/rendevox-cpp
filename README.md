@@ -77,7 +77,7 @@ $ pacman -S mingw-w64-x86_64-vulkan-devel
 $ run-linux.sh
 ```
 
-#### Windows
+#### Windows - Windows PowerShell
 ``` shell
 $ run-win.cmd
 ```
