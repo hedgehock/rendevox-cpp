@@ -1,7 +1,7 @@
 #include "../rendevox-base/rendevox-base.hpp"
 
 int main() {
-	Rendevox::Window window = Rendevox::Window("OpenGL", 1280, 720, "RVX", false);
+	Rendevox::Window window = Rendevox::Window("Vulkan", 1280, 720, "RVX", false);
 
 	return 0;
 }

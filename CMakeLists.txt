@@ -24,7 +24,8 @@ file(GLOB SRC
         rendevox-base/glad/glad.cpp
         rendevox-base/window/window.cpp
         rendevox-base/openglWindow/openglWindow.cpp
-        rendevox-base/openglRender/openglRender.cpp)
+        rendevox-base/openglRender/openglRender.cpp
+        rendevox-base/vulkanWindow/vulkanWindow.cpp)
 
 add_library(rendevoxlib STATIC ${SRC})
 
