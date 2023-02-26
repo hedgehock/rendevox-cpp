@@ -7,6 +7,9 @@ VulkanWindow::VulkanWindow(Rendevox::Window& window) {
 }
 
 void VulkanWindow::createInstance() {
+
+    std::cout << "Create instance." << std::endl;
+
     VulkanWindow::instance = vk::createInstanceUnique (
         vk::InstanceCreateInfo {
             vk::InstanceCreateFlags(),
