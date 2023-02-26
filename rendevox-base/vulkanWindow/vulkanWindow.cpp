@@ -1,6 +1,6 @@
-#include <vulkan/vulkan.hpp>
+#include "vulkanWindow.hpp"
 
-vk::UniqueInstance instance (
+vk::UniqueInstance VulkanWindow::instance (
     vk::createInstanceUnique (
         vk::InstanceCreateInfo {
             vk::InstanceCreateFlags(),
