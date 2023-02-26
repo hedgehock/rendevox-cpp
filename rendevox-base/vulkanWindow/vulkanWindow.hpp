@@ -6,8 +6,12 @@
 #include "../window/window.hpp"
 
 class VulkanWindow {
+    public:
+        VulkanWindow(Rendevox::Window& window);
+        ~VulkanWindow();
     private:
         vk::UniqueInstance instance;
+        void createInstance();
 };
 
 #endif

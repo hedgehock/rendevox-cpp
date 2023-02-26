@@ -9,5 +9,7 @@ Rendevox::Window::Window(const char* renderType, int width, int height, const ch
 	
 	if (strcmp(renderType, "OpenGL") == 0) {
 		OpenglWindow openglWindow = OpenglWindow(*this);
-	}
+	} else if (strcmp(renderType, "Vulkan") == 0) {
+        VulkanWindow vulkanWindow = VulkanWindow(*this);
+    }
 }
