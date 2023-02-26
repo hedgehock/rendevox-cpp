@@ -79,5 +79,5 @@ $ run-linux.sh
 
 #### Windows - Windows PowerShell
 ``` shell
-$ run-win.cmd
+$ .\run-win.cmd
 ```
