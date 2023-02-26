@@ -12,6 +12,7 @@
 #include "window/window.hpp"
 #include "openglWindow/openglWindow.hpp"
 #include "openglRender/openglRender.hpp"
+#include "vulkanWindow/vulkanWindow.hpp"
 
 // User functions
 void UserUpdate();
