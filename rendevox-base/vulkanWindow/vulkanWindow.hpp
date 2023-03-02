@@ -8,7 +8,7 @@
 typedef struct {
     uint32_t getGraphicsFamily;
     uint32_t getPresentFamily;
-} queueFamilyIndices
+} queueFamilyIndices;
 
 class VulkanWindow {
 public:
@@ -32,7 +32,7 @@ private:
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
     static bool isDeviceSuitable(vk::PhysicalDevice device);
-    static void error(const std::string& errorMessage);
+    void error(const std::string& errorMessage);
 };
 
 #endif

@@ -1,3 +1,4 @@
+#include <winuser.h>
 #include "vulkanWindow.hpp"
 
 VulkanWindow::VulkanWindow(Rendevox::Window &window) {
@@ -31,8 +32,8 @@ void VulkanWindow::createInstance() {
         );
 
         std::cout << "Instance was created\n";
-    } catch (const std::exception &error) {
-        VulkanWindow::error("failed to create instance!");
+    } catch (vk::IncompatibleDriverError &error) {
+        this->error("Vulkan Error: Failed to create instance! \'Incompatible Driver Error.\'");
     }
 
 }
@@ -78,7 +79,14 @@ bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 }
 
 void VulkanWindow::error(const std::string &errorMessage) {
-    throw std::runtime_error(errorMessage + "\n");
+    MessageBox(
+            NULL,
+            errorMessage,
+            "Error!",
+            MB_OK
+            );
+    delete this;
+    exit(EXIT_FAILURE);
 }
 
 VulkanWindow::~VulkanWindow() {
