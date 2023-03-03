@@ -1,11 +1,6 @@
-#include "vulkanWindow.hpp"
-#include <cstdint>
-#include <iostream>
-#include <vulkan/vulkan_core.h>
-#include <vulkan/vulkan_handles.hpp>
-#include <vulkan/vulkan_structs.hpp>
+#include "../rendevox-base.hpp"
 
-VulkanWindow::VulkanWindow(Rendevox::Window &window) {
+VulkanWindow::VulkanWindow(Rendevox::Window& window) {
     this->initVulkan();
     this->mainLoop();
 }
@@ -21,7 +16,7 @@ void VulkanWindow::createInstance() {
         this->instance = vk::createInstanceUnique(
                 vk::InstanceCreateInfo{
                         vk::InstanceCreateFlags(),
-                        &(const vk::ApplicationInfo &) vk::ApplicationInfo{
+                        &(const vk::ApplicationInfo&) vk::ApplicationInfo{
                                 "Rendevox-test",
                                 VK_MAKE_VERSION(0, 0, 0),
                                 "Rendevox",
@@ -36,8 +31,8 @@ void VulkanWindow::createInstance() {
         );
 
         std::cout << "Instance was created\n";
-    } catch (vk::IncompatibleDriverError &error) {
-        this->error("Vulkan Error: Failed to create instance! \'Incompatible Driver Error.");
+    } catch (vk::IncompatibleDriverError& error) {
+        VulkanWindow::error("Vulkan Error: Failed to create instance! \'Incompatible Driver Error.\'");
     }
 
 }
@@ -47,17 +42,21 @@ void VulkanWindow::getPhysicalDevice() {
 
     std::cout << "\nPhysical devices:\n";
 
-    for (vk::PhysicalDevice pd: deviceList) {
-        vk::PhysicalDeviceProperties deviceProperties = pd.getProperties();
-        std::cout << "    " << deviceProperties.deviceName << "\n";
+    for (vk::PhysicalDevice device: deviceList) {
+        vk::PhysicalDeviceProperties deviceProperties = device.getProperties();
+        std::cout << "    " << deviceProperties.deviceName << ":\n";
     }
 
-    for (vk::PhysicalDevice pd: deviceList) {
-        if (VulkanWindow::isDeviceSuitable(pd)) {
-            this->physicalDevice = pd;
+    if (!deviceList.empty()) {
+        for (vk::PhysicalDevice device: deviceList) {
+            if (VulkanWindow::isDeviceSuitable(device)) {
+                this->physicalDevice = device;
 
-            std::cout << "\nUsing GPU: " << pd.getProperties().deviceName << "\n\n";
-            break;
+                std::cout << "\nUsing GPU: " << device.getProperties().deviceName << "\n\n";
+                break;
+            } if (this->physicalDevice != deviceList[deviceList.size() - 1]) {
+                VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
+            }
         }
     }
 
@@ -71,42 +70,58 @@ void VulkanWindow::mainLoop() {
 }
 
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
-    return (device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu);
+    queueFamilyIndices indices = VulkanWindow::findQueueFamilies(device);
+
+    bool presentAllQueueFamilies = indices.isGraphicsFamilyPresent && indices.isPresentFamilyPresent;
+    bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu || device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
+
+    return (supportedGpuTypes && presentAllQueueFamilies);
 }
 
 queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     queueFamilyIndices indices = {0};
     uint32_t queueFamilyCount;
-    device.vk::PhysicalDevice::getQueueFamilyProperties(&queueFamilyCount, nullptr, nullptr);
+    device.getQueueFamilyProperties(&queueFamilyCount, nullptr);
     vk::QueueFamilyProperties queueFamilies[queueFamilyCount];
 
-    device.vk::PhysicalDevice::getQueueFamilyProperties(&queueFamilyCount, &queueFamilies, nullptr);
+    device.getQueueFamilyProperties(&queueFamilyCount, queueFamilies);
 
     for (int i = 0; i < queueFamilyCount; i++) {
-        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+        if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
             indices.getGraphicsFamily = i;
-            std::cout << "This GPU supports GRAPHICS queueFamilies!\n";
+            indices.isGraphicsFamilyPresent = true;
+            std::cout << "        This GPU supports GRAPHICS queueFamilies!\n";
+        }
+
+        if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
+            std::cout << "        This GPU supports COMPUTE queueFamilies!\n";
+        }
+
+        if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer) {
+            std::cout << "        This GPU supports TRANSFER queueFamilies!\n";
+        }
+
+        indices.isPresentFamilyPresent = true;
+
+        if (indices.isGraphicsFamilyPresent && indices.isPresentFamilyPresent) {
+            break;
         }
 
     }
+
+    return indices;
 }
 
 bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 
 }
 
-void VulkanWindow::error(const std::string &errorMessage) {
+void VulkanWindow::error(const std::string& errorMessage) {
     std::cout << "Error: " << errorMessage << "\n";
-    delete this;
     exit(EXIT_FAILURE);
 }
 
 VulkanWindow::~VulkanWindow() {
-
-    this->logicalDevice->destroy();
-
-    this->instance->destroy();
-
     std::cout << "Destructor has ended.";
 }
 

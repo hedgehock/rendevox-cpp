@@ -2,12 +2,16 @@
 #define VULKANWINDOW_HPP
 
 #include <vulkan/vulkan.hpp>
+#include <vulkan/vulkan_handles.hpp>
+#include <vulkan/vulkan_structs.hpp>
 
 #include "../window/window.hpp"
 
 typedef struct {
     uint32_t getGraphicsFamily;
     uint32_t getPresentFamily;
+    bool isGraphicsFamilyPresent;
+    bool isPresentFamilyPresent;
 } queueFamilyIndices;
 
 class VulkanWindow {
@@ -28,11 +32,11 @@ private:
     void getPhysicalDevice();
     void createLogicalDevice();
 
-    queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
+    static queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
     static bool isDeviceSuitable(vk::PhysicalDevice device);
-    void error(const std::string& errorMessage);
+    static void error(const std::string& errorMessage);
 };
 
 #endif
