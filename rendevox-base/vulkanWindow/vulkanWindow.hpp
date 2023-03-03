@@ -28,7 +28,7 @@ private:
     void getPhysicalDevice();
     void createLogicalDevice();
 
-    queueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
     static bool isDeviceSuitable(vk::PhysicalDevice device);

@@ -1,5 +1,9 @@
-#include <winuser.h>
 #include "vulkanWindow.hpp"
+#include <cstdint>
+#include <iostream>
+#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan_handles.hpp>
+#include <vulkan/vulkan_structs.hpp>
 
 VulkanWindow::VulkanWindow(Rendevox::Window &window) {
     this->initVulkan();
@@ -33,7 +37,7 @@ void VulkanWindow::createInstance() {
 
         std::cout << "Instance was created\n";
     } catch (vk::IncompatibleDriverError &error) {
-        this->error("Vulkan Error: Failed to create instance! \'Incompatible Driver Error.\'");
+        this->error("Vulkan Error: Failed to create instance! \'Incompatible Driver Error.");
     }
 
 }
@@ -70,8 +74,21 @@ bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
     return (device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu);
 }
 
-queueFamilyIndices VulkanWindow::findQueueFamilies(VkPhysicalDevice device) {
+queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
+    queueFamilyIndices indices = {0};
+    uint32_t queueFamilyCount;
+    device.vk::PhysicalDevice::getQueueFamilyProperties(&queueFamilyCount, nullptr, nullptr);
+    vk::QueueFamilyProperties queueFamilies[queueFamilyCount];
 
+    device.vk::PhysicalDevice::getQueueFamilyProperties(&queueFamilyCount, &queueFamilies, nullptr);
+
+    for (int i = 0; i < queueFamilyCount; i++) {
+        if (queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            indices.getGraphicsFamily = i;
+            std::cout << "This GPU supports GRAPHICS queueFamilies!\n";
+        }
+
+    }
 }
 
 bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) {
@@ -79,12 +96,7 @@ bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 }
 
 void VulkanWindow::error(const std::string &errorMessage) {
-    MessageBox(
-            NULL,
-            errorMessage,
-            "Error!",
-            MB_OK
-            );
+    std::cout << "Error: " << errorMessage << "\n";
     delete this;
     exit(EXIT_FAILURE);
 }
