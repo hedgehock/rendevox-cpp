@@ -54,9 +54,11 @@ void VulkanWindow::getPhysicalDevice() {
 
                 std::cout << "\nUsing GPU: " << device.getProperties().deviceName << "\n\n";
                 break;
-            } if (this->physicalDevice != deviceList[deviceList.size() - 1]) {
-                VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
             }
+        }
+
+        if (std::find(deviceList.begin(), deviceList.end(), physicalDevice)->operator!=(physicalDevice)) {
+            VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
         }
     }
 
@@ -73,7 +75,8 @@ bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
     queueFamilyIndices indices = VulkanWindow::findQueueFamilies(device);
 
     bool presentAllQueueFamilies = indices.isGraphicsFamilyPresent && indices.isPresentFamilyPresent;
-    bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu || device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
+    bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
+                             device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
 
     return (supportedGpuTypes && presentAllQueueFamilies);
 }
