@@ -125,6 +125,9 @@ void VulkanWindow::error(const std::string& errorMessage) {
 }
 
 VulkanWindow::~VulkanWindow() {
+
+    logicalDevice->destroy();
+
     std::cout << "Destructor has ended.";
 }
 
