@@ -82,7 +82,7 @@ $ run-linux.sh
 $ .\run-win.cmd
 ```
 
-#### Windows - MSYS2 Mingw34
+#### Windows - MSYS2 Mingw64
 ```
 $ cmd <./run-win.cmd
 ```
