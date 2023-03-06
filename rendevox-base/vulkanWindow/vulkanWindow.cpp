@@ -51,15 +51,19 @@ void VulkanWindow::getPhysicalDevice() {
         for (vk::PhysicalDevice device: deviceList) {
             if (VulkanWindow::isDeviceSuitable(device)) {
                 this->physicalDevice = device;
-
-                std::cout << "\nUsing GPU: " << device.getProperties().deviceName << "\n\n";
                 break;
+            } else {
+                std::cout << "\nThis GPU isn\'t suitable.'";
             }
         }
 
         if (std::find(deviceList.begin(), deviceList.end(), physicalDevice)->operator!=(physicalDevice)) {
             VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
         }
+
+
+        std::cout << "\nUsing GPU: " << this->physicalDevice.getProperties().deviceName << "\n\n";
+
     }
 
 }
