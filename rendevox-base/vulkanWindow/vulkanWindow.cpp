@@ -38,7 +38,7 @@ void VulkanWindow::createInstance() {
 }
 
 void VulkanWindow::getPhysicalDevice() {
-    std::vector deviceList = this->instance->enumeratePhysicalDevices();
+    std::vector<vk::PhysicalDevice> deviceList = this->instance->enumeratePhysicalDevices();
 
     std::cout << "\nPhysical devices:\n";
 
