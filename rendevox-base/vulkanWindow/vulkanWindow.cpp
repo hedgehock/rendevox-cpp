@@ -57,7 +57,7 @@ void VulkanWindow::getPhysicalDevice() {
             }
         }
 
-        if (std::find(deviceList.begin(), deviceList.end(), physicalDevice)->operator!=(physicalDevice)) {
+        if (std::find(deviceList.begin(), deviceList.end(), this->physicalDevice)->operator!=(this->physicalDevice)) {
             VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
         }
 
@@ -130,7 +130,7 @@ void VulkanWindow::error(const std::string& errorMessage) {
 
 VulkanWindow::~VulkanWindow() {
 
-    logicalDevice->destroy();
+    this->logicalDevice->destroy();
 
     std::cout << "Destructor has ended.";
 }
