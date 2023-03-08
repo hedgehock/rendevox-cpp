@@ -40,28 +40,34 @@ void VulkanWindow::createInstance() {
 void VulkanWindow::pickPhysicalDevice() {
     std::vector<vk::PhysicalDevice> deviceList = this->instance->enumeratePhysicalDevices();
 
-    std::cout << "\nPhysical devices:";
-
     if (!deviceList.empty()) {
+
+        std::cout << "\nPhysical devices:\n";
+
         for (vk::PhysicalDevice device: deviceList) {
 
-            vk::PhysicalDeviceProperties deviceProperties = device.getProperties();
-            std::cout << "\n    " << deviceProperties.deviceName << ":\n";
+            VulkanWindow::printPhysicalDeviceInfo(device);
 
+            if (VulkanWindow::isDeviceSuitable(device)) {
+                std::cout << "        This GPU is suitable.\n";
+            } else {
+                std::cout << "        This GPU isn\'t suitable.\n";
+            }
+
+            std::cout << "\n";
+        }
+
+        for (vk::PhysicalDevice device: deviceList) {
             if (VulkanWindow::isDeviceSuitable(device)) {
                 this->physicalDevice = device;
                 break;
-            } else {
-                std::cout << "        This GPU isn\'t suitable.";
             }
-
-            std::cout << std::endl;
         }
 
         if (std::find(deviceList.begin(), deviceList.end(), this->physicalDevice)->operator!=(this->physicalDevice)) {
             VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
         } else {
-            std::cout << "\nUsing GPU: " << this->physicalDevice.getProperties().deviceName << "\n\n";
+            std::cout << "Using GPU: " << this->physicalDevice.getProperties().deviceName << "\n\n";
         }
 
     } else {
@@ -78,36 +84,39 @@ void VulkanWindow::createLogicalDevice() {
     vk::DeviceQueueCreateInfo queueCreateInfos[2];
 
     queueCreateInfos[0] = vk::DeviceQueueCreateInfo{
-        vk::DeviceQueueCreateFlags(),
-        indices.getGraphicsFamily.value(),
-        1,
-        &queuePriority,
-        nullptr
+            vk::DeviceQueueCreateFlags(),
+            indices.getGraphicsFamily.value(),
+            1,
+            &queuePriority,
+            nullptr
 
 
     };
 
     queueCreateInfos[1] = vk::DeviceQueueCreateInfo{
-        vk::DeviceQueueCreateFlags(),
-        indices.getPresentFamily.value(),
-        1,
-        &queuePriority,
-        nullptr
+            vk::DeviceQueueCreateFlags(),
+            indices.getPresentFamily.value(),
+            1,
+            &queuePriority,
+            nullptr
 
 
     };
 
     this->logicalDevice = physicalDevice.createDeviceUnique(
-        vk::DeviceCreateInfo(
-            vk::DeviceCreateFlags(),
-            queueCreateInfos,
-            nullptr,
-            nullptr,
-            nullptr
-        )
+            vk::DeviceCreateInfo(
+                    vk::DeviceCreateFlags(),
+                    queueCreateInfos,
+                    nullptr,
+                    nullptr,
+                    nullptr
+            )
     );
 
     std::cout << "Logical device was created.\n";
+
+    this->graphicsQueue = this->logicalDevice->getQueue(indices.getGraphicsFamily.value(), 0);
+
 
 }
 
@@ -135,15 +144,12 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     for (int i = 0; i < queueFamilyCount; i++) {
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
             indices.getGraphicsFamily = i;
-            std::cout << "        This GPU supports GRAPHICS queueFamilies at index " << i << "!\n";
         }
 
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
-            std::cout << "        This GPU supports COMPUTE queueFamilies at index " << i << "!\n";
         }
 
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer) {
-            std::cout << "        This GPU supports TRANSFER queueFamilies at index " << i << "!\n";
         }
 
         indices.getPresentFamily = 0;
@@ -161,15 +167,46 @@ bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 
 }
 
+void VulkanWindow::printPhysicalDeviceInfo(vk::PhysicalDevice device) {
+    vk::PhysicalDeviceProperties deviceProperties = device.getProperties();
+    vk::PhysicalDeviceFeatures deviceFeatures = device.getFeatures();
+    vk::PhysicalDeviceMemoryProperties deviceMemoryProperties = device.getMemoryProperties();
+    std::vector<vk::QueueFamilyProperties> queueFamilyList = device.getQueueFamilyProperties();
+    vk::FormatProperties formatProperties = device.getFormatProperties(vk::Format::eR8G8B8A8Unorm);
+
+    std::cout << "    " << deviceProperties.deviceName << ":\n";
+    std::cout << "        Vulkan version: " << VK_VERSION_MAJOR(deviceProperties.apiVersion) << "." << VK_VERSION_MINOR(deviceProperties.apiVersion) << "." << VK_VERSION_PATCH(deviceProperties.apiVersion) << "\n";
+    std::cout << "        Max Texture Size: " << deviceProperties.limits.maxImageDimension2D << "\n";
+    std::cout << "        Geometry Shader: " << (deviceFeatures.geometryShader ? "supported" : "not supported") << "\n";
+    std::cout << "        Memory heaps:\n";
+    for (int i = 0; i < deviceMemoryProperties.memoryHeapCount; i++) {
+        std::cout << "            " << i << ": " << deviceMemoryProperties.memoryHeaps[i].size/1024/1024 << "MiB\n";
+    }
+    std::cout << "        Queue families:\n";
+    for (int i = 0; i < uint32_t(queueFamilyList.size()); ++i) {
+        std::cout << "            " << i << ": ";
+        if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eGraphics) {
+            std::cout << "g";
+        } if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eCompute) {
+            std::cout << "c";
+        } if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eTransfer) {
+            std::cout << "t";
+        }
+        std::cout << "  (count: " << queueFamilyList[i].queueCount << ")\n";
+    }
+    std::cout << "        R8G8B8A8Unorm format support for color attachment:\n";
+    std::cout << "            Images with linear tiling: " << std::string(formatProperties.linearTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
+    std::cout << "            Images with optimal tiling: " << std::string(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
+    std::cout << "            Buffers: " << std::string(formatProperties.bufferFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
+
+}
+
 void VulkanWindow::error(const std::string& errorMessage) {
     std::cout << "Error: " << errorMessage << "\n";
     exit(EXIT_FAILURE);
 }
 
 VulkanWindow::~VulkanWindow() {
-
-    this->logicalDevice->destroy();
-
     std::cout << "Destructor has ended.";
 }
 
