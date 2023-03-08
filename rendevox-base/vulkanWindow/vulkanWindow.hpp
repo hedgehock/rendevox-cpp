@@ -26,6 +26,8 @@ private:
     vk::UniqueInstance instance;
     vk::PhysicalDevice physicalDevice;
     vk::UniqueDevice logicalDevice;
+    vk::Queue graphicsQueue;
+    vk::Queue presentQueue;
 
     void initVulkan();
     void mainLoop();
@@ -35,6 +37,7 @@ private:
     void createLogicalDevice();
 
     static queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
+    static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
     static bool isDeviceSuitable(vk::PhysicalDevice device);
