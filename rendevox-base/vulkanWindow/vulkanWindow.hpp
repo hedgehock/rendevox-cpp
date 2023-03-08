@@ -4,15 +4,18 @@
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
+#include <optional>
 
 #include "../window/window.hpp"
 
-typedef struct {
-    uint32_t getGraphicsFamily;
-    uint32_t getPresentFamily;
-    bool isGraphicsFamilyPresent;
-    bool isPresentFamilyPresent;
-} queueFamilyIndices;
+struct queueFamilyIndices {
+    std::optional<uint32_t> getGraphicsFamily;
+    std::optional<uint32_t> getPresentFamily;
+
+    bool isComplete() {
+        return this->getGraphicsFamily.has_value() && this->getPresentFamily.has_value();
+    }
+};
 
 class VulkanWindow {
 public:
@@ -29,7 +32,7 @@ private:
     void mainLoop();
 
     void createInstance();
-    void getPhysicalDevice();
+    void pickPhysicalDevice();
     void createLogicalDevice();
 
     static queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);

@@ -7,7 +7,7 @@ VulkanWindow::VulkanWindow(Rendevox::Window& window) {
 
 void VulkanWindow::initVulkan() {
     this->createInstance();
-    this->getPhysicalDevice();
+    this->pickPhysicalDevice();
     this->createLogicalDevice();
 }
 
@@ -37,38 +37,78 @@ void VulkanWindow::createInstance() {
 
 }
 
-void VulkanWindow::getPhysicalDevice() {
+void VulkanWindow::pickPhysicalDevice() {
     std::vector<vk::PhysicalDevice> deviceList = this->instance->enumeratePhysicalDevices();
 
-    std::cout << "\nPhysical devices:\n";
-
-    for (vk::PhysicalDevice device: deviceList) {
-        vk::PhysicalDeviceProperties deviceProperties = device.getProperties();
-        std::cout << "    " << deviceProperties.deviceName << ":\n";
-    }
+    std::cout << "\nPhysical devices:";
 
     if (!deviceList.empty()) {
         for (vk::PhysicalDevice device: deviceList) {
+
+            vk::PhysicalDeviceProperties deviceProperties = device.getProperties();
+            std::cout << "\n    " << deviceProperties.deviceName << ":\n";
+
             if (VulkanWindow::isDeviceSuitable(device)) {
                 this->physicalDevice = device;
                 break;
             } else {
-                std::cout << "\nThis GPU isn\'t suitable.'";
+                std::cout << "        This GPU isn\'t suitable.";
             }
+
+            std::cout << std::endl;
         }
 
         if (std::find(deviceList.begin(), deviceList.end(), this->physicalDevice)->operator!=(this->physicalDevice)) {
             VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
+        } else {
+            std::cout << "\nUsing GPU: " << this->physicalDevice.getProperties().deviceName << "\n\n";
         }
 
-
-        std::cout << "\nUsing GPU: " << this->physicalDevice.getProperties().deviceName << "\n\n";
-
+    } else {
+        VulkanWindow::error("No GPU found!");
     }
 
 }
 
 void VulkanWindow::createLogicalDevice() {
+    queueFamilyIndices indices = VulkanWindow::findQueueFamilies(this->physicalDevice);
+
+    float queuePriority = 1.0f;
+
+    vk::DeviceQueueCreateInfo queueCreateInfos[2];
+
+    queueCreateInfos[0] = vk::DeviceQueueCreateInfo{
+        vk::DeviceQueueCreateFlags(),
+        indices.getGraphicsFamily.value(),
+        1,
+        &queuePriority,
+        nullptr
+
+
+    };
+
+    queueCreateInfos[1] = vk::DeviceQueueCreateInfo{
+        vk::DeviceQueueCreateFlags(),
+        indices.getPresentFamily.value(),
+        1,
+        &queuePriority,
+        nullptr
+
+
+    };
+
+    try {
+        this->logicalDevice = physicalDevice.createDeviceUnique(
+            vk::DeviceCreateInfo(
+                    vk::DeviceCreateFlags(),
+                    queueCreateInfos,
+                    nullptr,
+                    nullptr,
+                    nullptr
+                    )
+            );
+    }
+
 }
 
 void VulkanWindow::mainLoop() {
@@ -78,11 +118,10 @@ void VulkanWindow::mainLoop() {
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
     queueFamilyIndices indices = VulkanWindow::findQueueFamilies(device);
 
-    bool presentAllQueueFamilies = indices.isGraphicsFamilyPresent && indices.isPresentFamilyPresent;
     bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
                              device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
 
-    return (supportedGpuTypes && presentAllQueueFamilies);
+    return (supportedGpuTypes && indices.isComplete());
 }
 
 queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
@@ -96,21 +135,20 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     for (int i = 0; i < queueFamilyCount; i++) {
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
             indices.getGraphicsFamily = i;
-            indices.isGraphicsFamilyPresent = true;
-            std::cout << "        This GPU supports GRAPHICS queueFamilies!\n";
+            std::cout << "        This GPU supports GRAPHICS queueFamilies at index " << i << "!\n";
         }
 
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute) {
-            std::cout << "        This GPU supports COMPUTE queueFamilies!\n";
+            std::cout << "        This GPU supports COMPUTE queueFamilies at index " << i << "!\n";
         }
 
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer) {
-            std::cout << "        This GPU supports TRANSFER queueFamilies!\n";
+            std::cout << "        This GPU supports TRANSFER queueFamilies at index " << i << "!\n";
         }
 
-        indices.isPresentFamilyPresent = true;
+        indices.getPresentFamily = 0;
 
-        if (indices.isGraphicsFamilyPresent && indices.isPresentFamilyPresent) {
+        if (indices.isComplete()) {
             break;
         }
 
