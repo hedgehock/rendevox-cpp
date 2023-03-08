@@ -5,6 +5,7 @@
 #include <cstring>
 #include <utility>
 #include <string>
+#include <optional>
 
 #include "glad/glad.hpp"
 

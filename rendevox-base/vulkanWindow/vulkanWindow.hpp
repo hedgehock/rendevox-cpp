@@ -4,7 +4,6 @@
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
-#include <optional>
 
 #include "../window/window.hpp"
 

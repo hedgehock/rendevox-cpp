@@ -1,4 +1,5 @@
 #include "../rendevox-base.hpp"
+#include <iostream>
 
 VulkanWindow::VulkanWindow(Rendevox::Window& window) {
     this->initVulkan();
@@ -97,17 +98,17 @@ void VulkanWindow::createLogicalDevice() {
 
     };
 
-    try {
-        this->logicalDevice = physicalDevice.createDeviceUnique(
-            vk::DeviceCreateInfo(
-                    vk::DeviceCreateFlags(),
-                    queueCreateInfos,
-                    nullptr,
-                    nullptr,
-                    nullptr
-                    )
-            );
-    }
+    this->logicalDevice = physicalDevice.createDeviceUnique(
+        vk::DeviceCreateInfo(
+            vk::DeviceCreateFlags(),
+            queueCreateInfos,
+            nullptr,
+            nullptr,
+            nullptr
+        )
+    );
+
+    std::cout << "Logical device was created.\n";
 
 }
 
