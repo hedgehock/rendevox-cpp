@@ -21,7 +21,7 @@ void VulkanWindow::createInstance() {
                                 VK_MAKE_VERSION(0, 0, 0),
                                 "Rendevox",
                                 VK_MAKE_VERSION(0, 0, 0),
-                                VK_API_VERSION_1_0,
+                                VK_API_VERSION_1_3,
                         },
                         0,
                         nullptr,
