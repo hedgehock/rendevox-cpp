@@ -48,6 +48,7 @@ $ pacman -S mingw-w64-x86_64-toolchain
 $ pacman -S mingw-w64-x86_64-cmake
 $ pacman -S mingw-w64-x86_64-glfw
 $ pacman -S mingw-w64-x86_64-vulkan-devel
+$ pacman -S mingw-w64-x86_64-openal
 ```
 
 - C++17 compiler
@@ -55,6 +56,7 @@ $ pacman -S mingw-w64-x86_64-vulkan-devel
 - CMake
 - Glfw
 - Vulkan
+- OpenAL
 
 ## Features
 - 2D & 3D rendering

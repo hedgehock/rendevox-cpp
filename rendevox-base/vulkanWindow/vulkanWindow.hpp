@@ -9,10 +9,9 @@
 
 struct queueFamilyIndices {
     std::optional<uint32_t> getGraphicsFamily;
-    std::optional<uint32_t> getPresentFamily;
 
     bool isComplete() {
-        return this->getGraphicsFamily.has_value() && this->getPresentFamily.has_value();
+        return this->getGraphicsFamily.has_value();
     }
 };
 
@@ -27,7 +26,6 @@ private:
     vk::PhysicalDevice physicalDevice;
     vk::UniqueDevice logicalDevice;
     vk::Queue graphicsQueue;
-    vk::Queue presentQueue;
 
     void initVulkan();
     void mainLoop();

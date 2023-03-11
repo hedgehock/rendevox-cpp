@@ -81,7 +81,7 @@ void VulkanWindow::createLogicalDevice() {
 
     float queuePriority = 1.0f;
 
-    vk::DeviceQueueCreateInfo queueCreateInfos[2];
+    vk::DeviceQueueCreateInfo queueCreateInfos[1];
 
     queueCreateInfos[0] = vk::DeviceQueueCreateInfo{
             vk::DeviceQueueCreateFlags(),
@@ -93,21 +93,13 @@ void VulkanWindow::createLogicalDevice() {
 
     };
 
-    queueCreateInfos[1] = vk::DeviceQueueCreateInfo{
-            vk::DeviceQueueCreateFlags(),
-            indices.getPresentFamily.value(),
-            1,
-            &queuePriority,
-            nullptr
-
-
-    };
-
     this->logicalDevice = physicalDevice.createDeviceUnique(
             vk::DeviceCreateInfo(
                     vk::DeviceCreateFlags(),
+                    sizeof(queueCreateInfos) / sizeof(vk::DeviceQueueCreateInfo),
                     queueCreateInfos,
-                    nullptr,
+                    0, nullptr,
+                    0, nullptr,
                     nullptr,
                     nullptr
             )
@@ -152,8 +144,6 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer) {
         }
 
-        indices.getPresentFamily = 0;
-
         if (indices.isComplete()) {
             break;
         }
@@ -175,29 +165,37 @@ void VulkanWindow::printPhysicalDeviceInfo(vk::PhysicalDevice device) {
     vk::FormatProperties formatProperties = device.getFormatProperties(vk::Format::eR8G8B8A8Unorm);
 
     std::cout << "    " << deviceProperties.deviceName << ":\n";
-    std::cout << "        Vulkan version: " << VK_VERSION_MAJOR(deviceProperties.apiVersion) << "." << VK_VERSION_MINOR(deviceProperties.apiVersion) << "." << VK_VERSION_PATCH(deviceProperties.apiVersion) << "\n";
+    std::cout << "        Vulkan version: " << VK_VERSION_MAJOR(deviceProperties.apiVersion) << "."
+              << VK_VERSION_MINOR(deviceProperties.apiVersion) << "." << VK_VERSION_PATCH(deviceProperties.apiVersion)
+              << "\n";
     std::cout << "        Max Texture Size: " << deviceProperties.limits.maxImageDimension2D << "\n";
     std::cout << "        Geometry Shader: " << (deviceFeatures.geometryShader ? "supported" : "not supported") << "\n";
     std::cout << "        Memory heaps:\n";
     for (int i = 0; i < deviceMemoryProperties.memoryHeapCount; i++) {
-        std::cout << "            " << i << ": " << deviceMemoryProperties.memoryHeaps[i].size/1024/1024 << "MiB\n";
+        std::cout << "            " << i << ": " << deviceMemoryProperties.memoryHeaps[i].size / 1024 / 1024 << "MiB\n";
     }
     std::cout << "        Queue families:\n";
     for (int i = 0; i < uint32_t(queueFamilyList.size()); ++i) {
         std::cout << "            " << i << ": ";
         if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eGraphics) {
             std::cout << "g";
-        } if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eCompute) {
+        }
+        if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eCompute) {
             std::cout << "c";
-        } if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eTransfer) {
+        }
+        if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eTransfer) {
             std::cout << "t";
         }
         std::cout << "  (count: " << queueFamilyList[i].queueCount << ")\n";
     }
     std::cout << "        R8G8B8A8Unorm format support for color attachment:\n";
-    std::cout << "            Images with linear tiling: " << std::string(formatProperties.linearTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
-    std::cout << "            Images with optimal tiling: " << std::string(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
-    std::cout << "            Buffers: " << std::string(formatProperties.bufferFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
+    std::cout << "            Images with linear tiling: " << std::string(
+            formatProperties.linearTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
+    std::cout << "            Images with optimal tiling: " << std::string(
+            formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no")
+              << "\n";
+    std::cout << "            Buffers: " << std::string(
+            formatProperties.bufferFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
 
 }
 
