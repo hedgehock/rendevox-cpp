@@ -1,4 +1,4 @@
-#include "../rendevox-base.hpp"
+#include <rendevox-base.hpp>
 
 Rendevox::Window::Window(const char* renderType, int width, int height, const char* title, bool fullscreen) {
 	this->renderType = renderType;

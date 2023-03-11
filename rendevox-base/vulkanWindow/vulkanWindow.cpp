@@ -1,4 +1,4 @@
-#include "../rendevox-base.hpp"
+#include <rendevox-base.hpp>
 
 VulkanWindow::VulkanWindow(Rendevox::Window& window) {
     this->initVulkan();

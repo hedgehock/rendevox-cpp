@@ -1,9 +1,9 @@
 #ifndef OPENGLRENDER_HPP
 #define OPENGLRENDER_HPP
 
-#include "../vector2.hpp"
-#include "../vector3.hpp"
-#include "../openglWindow/openglWindow.hpp"
+#include <vector2.hpp>
+#include <vector3.hpp>
+#include <openglWindow/openglWindow.hpp>
 
 struct OpenglRender {
 public:

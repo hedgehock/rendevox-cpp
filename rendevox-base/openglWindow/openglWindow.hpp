@@ -1,10 +1,10 @@
 #ifndef OPENGLWINDOW_HPP
 #define OPENGLWINDOW_HPP
 
-#include "../glad/glad.hpp"
+#include <glad/glad.hpp>
 #include <GLFW/glfw3.h>
 
-#include "../window/window.hpp"
+#include <window/window.hpp>
 
 class OpenglWindow {
 public:

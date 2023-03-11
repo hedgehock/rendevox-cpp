@@ -1,4 +1,4 @@
-#include "../rendevox-base.hpp"
+#include <rendevox-base.hpp>
 
 OpenglWindow::OpenglWindow(Rendevox::Window& window) {
 	this->window = &window;

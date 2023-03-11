@@ -30,6 +30,8 @@ file(GLOB SRC
 
 add_library(rendevoxlib STATIC ${SRC})
 
+include_directories(rendevox-base)
+
 add_executable(rendevox app/main.cpp)
 
 target_link_libraries(rendevox rendevoxlib)

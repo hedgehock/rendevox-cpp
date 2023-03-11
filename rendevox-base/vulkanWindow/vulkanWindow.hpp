@@ -5,7 +5,7 @@
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
 
-#include "../window/window.hpp"
+#include <window/window.hpp>
 
 struct queueFamilyIndices {
     std::optional<uint32_t> getGraphicsFamily;

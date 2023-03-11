@@ -1,5 +1,5 @@
-#include "../rendevox-base.hpp"
-#include "openglRender.hpp"
+#include <rendevox-base.hpp>
+#include <openglRender/openglRender.hpp>
 
 #include <vector>
 
