@@ -189,12 +189,12 @@ void VulkanWindow::printPhysicalDeviceInfo(vk::PhysicalDevice device) {
         std::cout << "  (count: " << queueFamilyList[i].queueCount << ")\n";
     }
     std::cout << "        R8G8B8A8Unorm format support for color attachment:\n";
-    std::cout << "            Images with linear tiling: " << std::string(
+    std::cout << "            Images with linear tiling: " << (
             formatProperties.linearTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
-    std::cout << "            Images with optimal tiling: " << std::string(
+    std::cout << "            Images with optimal tiling: " << (
             formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no")
               << "\n";
-    std::cout << "            Buffers: " << std::string(
+    std::cout << "            Buffers: " << (
             formatProperties.bufferFeatures & vk::FormatFeatureFlagBits::eColorAttachment ? "yes" : "no") << "\n";
 
 }
