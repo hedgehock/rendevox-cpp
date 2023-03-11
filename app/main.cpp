@@ -1,4 +1,4 @@
-#include "../rendevox-base/rendevox-base.hpp"
+#include <rendevox-base.hpp>
 
 int main() {
 	Rendevox::Window window = Rendevox::Window("Vulkan", 1280, 720, "RVX", false);
