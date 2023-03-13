@@ -1,8 +1,20 @@
 #include <rendevox-base.hpp>
 
-VulkanWindow::VulkanWindow(Rendevox::Window& window) {
+VulkanWindow::VulkanWindow(Rendevox::Window& windowInfo) {
+    this->initWindow(windowInfo);
     this->initVulkan();
     this->mainLoop();
+}
+
+void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
+    glfwInit();
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+    this->window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
+
+
 }
 
 void VulkanWindow::initVulkan() {
@@ -114,6 +126,10 @@ void VulkanWindow::createLogicalDevice() {
 
 void VulkanWindow::mainLoop() {
 
+    while (!glfwWindowShouldClose(this->window)) {
+        glfwPollEvents();
+    }
+
 }
 
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
@@ -205,6 +221,11 @@ void VulkanWindow::error(const std::string& errorMessage) {
 }
 
 VulkanWindow::~VulkanWindow() {
+
+    glfwDestroyWindow(this->window);
+
+    glfwTerminate();
+
     std::cout << "Destructor has ended.";
 }
 

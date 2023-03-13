@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_handles.hpp>
 #include <vulkan/vulkan_structs.hpp>
+#include <GLFW/glfw3.h>
 
 #include <window/window.hpp>
 
@@ -17,7 +18,7 @@ struct queueFamilyIndices {
 
 class VulkanWindow {
 public:
-    explicit VulkanWindow(Rendevox::Window &window);
+    explicit VulkanWindow(Rendevox::Window &windowInfo);
 
     ~VulkanWindow();
 
@@ -26,7 +27,9 @@ private:
     vk::PhysicalDevice physicalDevice;
     vk::UniqueDevice logicalDevice;
     vk::Queue graphicsQueue;
+    GLFWwindow* window{};
 
+    void initWindow(Rendevox::Window& windowInfo);
     void initVulkan();
     void mainLoop();
 
