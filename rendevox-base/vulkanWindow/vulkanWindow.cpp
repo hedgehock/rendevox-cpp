@@ -15,6 +15,8 @@ VulkanWindow::VulkanWindow(Rendevox::Window& windowInfo) {
 void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
     glfwInit();
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
