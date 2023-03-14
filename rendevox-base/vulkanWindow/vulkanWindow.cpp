@@ -117,8 +117,8 @@ void VulkanWindow::createLogicalDevice() {
     std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos(0);
     std::vector<uint32_t> uniqueQueueFamilies = {indices.getGraphicsFamily.value(), indices.getPresentFamily.value()};
 
-    float queuePriority = 1.0f;
     for (uint32_t queueFamily: uniqueQueueFamilies) {
+        float queuePriority = 1.0f;
         vk::DeviceQueueCreateInfo queueCreateInfo(
                 vk::DeviceQueueCreateFlags(),
                 queueFamily,
@@ -185,7 +185,7 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     device.getQueueFamilyProperties(&queueFamilyCount, queueFamilies);
 
     for (int i = 0; i < queueFamilyCount; i++) {
-        if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics && !indices.getGraphicsFamily.has_value()) {
+        if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
             indices.getGraphicsFamily = i;
         }
 
