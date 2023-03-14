@@ -17,6 +17,12 @@ struct queueFamilyIndices {
     }
 };
 
+struct swapChainSupportDetails {
+    vk::SurfaceCapabilitiesKHR capabilities;
+    std::vector<vk::SurfaceFormatKHR> formats;
+    std::vector<vk::PresentModeKHR> presentModes;
+};
+
 class VulkanWindow {
 public:
     explicit VulkanWindow(Rendevox::Window &windowInfo);
@@ -41,12 +47,13 @@ private:
     void pickPhysicalDevice();
     void createLogicalDevice();
 
+    bool isDeviceSuitable(vk::PhysicalDevice device);
     queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
+
+    swapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
     static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
     static std::vector<const char*> getRequiredExtensions();
     static bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
-
-    bool isDeviceSuitable(vk::PhysicalDevice device);
 };
 
 #endif

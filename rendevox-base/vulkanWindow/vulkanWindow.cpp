@@ -162,13 +162,17 @@ void VulkanWindow::mainLoop() {
 
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
     queueFamilyIndices indices = findQueueFamilies(device);
-
+    bool swapChainAdequate = false;
     bool extensionsSupported = checkDeviceExtensionSupport(device);
-
     bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
                              device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
 
-    return (supportedGpuTypes && indices.isComplete() && extensionsSupported);
+    if (extensionsSupported) {
+        swapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    return (supportedGpuTypes && indices.isComplete() && extensionsSupported && swapChainAdequate);
 }
 
 queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
@@ -284,6 +288,42 @@ std::vector<const char*> VulkanWindow::getRequiredExtensions() {
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
     return extensions;
+}
+
+swapChainSupportDetails VulkanWindow::querySwapChainSupport(vk::PhysicalDevice device) {
+    swapChainSupportDetails details;
+    uint32_t formatCount;
+    uint32_t presentModeCount;
+
+    if (device.getSurfaceCapabilitiesKHR(*surface, &details.capabilities) !=
+        vk::Result::eSuccess) {
+        throw VulkanError("Cannot get KHR surface Capabilities!");
+    }
+
+    if (device.getSurfaceFormatsKHR(*surface, &formatCount, nullptr) != vk::Result::eSuccess) {
+        throw VulkanError("Cannot get number of KHR surface formats!");
+    }
+
+    if (formatCount != 0) {
+        details.formats.resize(formatCount);
+        if (device.getSurfaceFormatsKHR(*surface, &formatCount, details.formats.data()) != vk::Result::eSuccess) {
+            throw VulkanError("Cannot get KHR surface formats!");
+        }
+    }
+
+    if (device.getSurfacePresentModesKHR(*surface, &presentModeCount, nullptr) != vk::Result::eSuccess) {
+        throw VulkanError("Cannot get number of present modes!");
+    }
+
+    if (presentModeCount != 0) {
+        details.presentModes.resize(presentModeCount);
+        if (device.getSurfacePresentModesKHR(*surface, &presentModeCount, details.presentModes.data()) !=
+            vk::Result::eSuccess) {
+            throw VulkanError("Cannot get present modes!");
+        }
+    }
+
+    return details;
 }
 
 VulkanWindow::~VulkanWindow() {
