@@ -258,7 +258,7 @@ void VulkanWindow::printPhysicalDeviceInfo(vk::PhysicalDevice device) {
         std::cout << "            " << i << ": " << deviceMemoryProperties.memoryHeaps[i].size / 1024 / 1024 << "MiB\n";
     }
     std::cout << "        Queue families:\n";
-    for (int i = 0; i < uint32_t(queueFamilyList.size()); ++i) {
+    for (int i = 0; i < uint32_t(queueFamilyList.size()); i++) {
         std::cout << "            " << i << ": ";
         if (queueFamilyList[i].queueFlags & vk::QueueFlagBits::eGraphics) {
             std::cout << "g";
