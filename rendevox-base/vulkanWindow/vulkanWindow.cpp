@@ -2,6 +2,10 @@
 
 #include <rendevox-base.hpp>
 
+const std::vector<const char*> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 VulkanWindow::VulkanWindow(Rendevox::Window& windowInfo) {
     initWindow(windowInfo);
     initVulkan();
@@ -15,7 +19,8 @@ void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     if (windowInfo.fullscreen) {
-        window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, glfwGetPrimaryMonitor(), nullptr);
+        window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, glfwGetPrimaryMonitor(),
+                                  nullptr);
     } else {
         window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
     }
@@ -120,7 +125,7 @@ void VulkanWindow::createLogicalDevice() {
                 1,
                 &queuePriority,
                 nullptr
-                );
+        );
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
@@ -131,7 +136,7 @@ void VulkanWindow::createLogicalDevice() {
                         queueCreateInfos.size(),
                         queueCreateInfos.data(),
                         0, nullptr,
-                        0, nullptr,
+                        deviceExtensions.size(), deviceExtensions.data(),
                         nullptr,
                         nullptr
                 )
@@ -158,10 +163,12 @@ void VulkanWindow::mainLoop() {
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
     queueFamilyIndices indices = findQueueFamilies(device);
 
+    bool extensionsSupported = checkDeviceExtensionSupport(device);
+
     bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
                              device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
 
-    return (supportedGpuTypes && indices.isComplete());
+    return (supportedGpuTypes && indices.isComplete() && extensionsSupported);
 }
 
 queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
@@ -201,8 +208,30 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     return indices;
 }
 
-bool VulkanWindow::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool VulkanWindow::checkDeviceExtensionSupport(vk::PhysicalDevice device) {
+    uint32_t extensionCount;
+    if (device.enumerateDeviceExtensionProperties(nullptr, &extensionCount, nullptr) != vk::Result::eSuccess) {
+        throw VulkanError("Cannot get extension count!");
+    }
 
+    std::vector<vk::ExtensionProperties> availableExtensions(extensionCount);
+
+    if (device.enumerateDeviceExtensionProperties(nullptr, &extensionCount, availableExtensions.data()) !=
+        vk::Result::eSuccess) {
+        throw VulkanError("Cannot get extension names!");
+    }
+
+    int supportedExtensionCount = 0;
+
+    for (auto deviceExtension: deviceExtensions) {
+        for (int e = 0; e < extensionCount; e++) {
+            if (strcmp(deviceExtension, availableExtensions[e].extensionName) == 0) {
+                supportedExtensionCount++;
+            }
+        }
+    }
+
+    return supportedExtensionCount == int(deviceExtensions.size());
 }
 
 void VulkanWindow::printPhysicalDeviceInfo(vk::PhysicalDevice device) {

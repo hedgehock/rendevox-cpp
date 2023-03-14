@@ -44,7 +44,7 @@ private:
     queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
     static std::vector<const char*> getRequiredExtensions();
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+    static bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
 
     bool isDeviceSuitable(vk::PhysicalDevice device);
 };
