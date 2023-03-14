@@ -14,7 +14,11 @@ void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
+    if (windowInfo.fullscreen) {
+        window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, glfwGetPrimaryMonitor(), nullptr);
+    } else {
+        window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
+    }
 
 }
 
