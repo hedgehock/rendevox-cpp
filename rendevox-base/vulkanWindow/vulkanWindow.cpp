@@ -47,8 +47,8 @@ void VulkanWindow::createInstance() {
         );
 
         std::cout << "Instance was created\n";
-    } catch (vk::IncompatibleDriverError& error) {
-        VulkanWindow::error("Vulkan Error", "Failed to create instance! \'Incompatible Driver Error.\'");
+    } catch (std::exception& error) {
+        throw VulkanError("Failed to create instance!");
     }
 
 }
@@ -57,7 +57,7 @@ void VulkanWindow::createSurface() {
     VkSurfaceKHR vkSurfaceKhrLocal;
 
     if (glfwCreateWindowSurface(instance->operator VkInstance(), window, nullptr, &vkSurfaceKhrLocal) != VK_SUCCESS) {
-        VulkanWindow::error("Glfw Error", "Failed to create window surface.");
+        throw GLFWError("Failed to create window surface.");
     }
 
     surface = vk::UniqueSurfaceKHR(vkSurfaceKhrLocal);
@@ -91,13 +91,13 @@ void VulkanWindow::pickPhysicalDevice() {
         }
 
         if (std::find(deviceList.begin(), deviceList.end(), physicalDevice)->operator!=(physicalDevice)) {
-            VulkanWindow::error("Rendevox Error", "Failed to pick Physical device! \'Incompatible GPU.\'");
+            throw RendevoxError("Failed to pick Physical device! \'Incompatible GPU.\'");
         } else {
             std::cout << "Using GPU: " << physicalDevice.getProperties().deviceName << "\n\n";
         }
 
     } else {
-        VulkanWindow::error("Incompatibility error", "No GPU found!");
+        throw IncompatibilityError("No GPU found!");
     }
 
 }
@@ -133,7 +133,7 @@ void VulkanWindow::createLogicalDevice() {
                 )
         );
     } catch (std::exception& error) {
-        VulkanWindow::error("Vulkan error:", "Cannot create logical device!");
+        throw VulkanError("Cannot create logical device!");
     }
 
     std::cout << "Logical device was created.\n";
@@ -181,7 +181,7 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
         }
 
         if (device.getSurfaceSupportKHR(i, surface->operator VkSurfaceKHR(), &presentSupport) != vk::Result::eSuccess) {
-            VulkanWindow::error("Vulkan error", "Cannot check KHR surface support!");
+            throw VulkanError("Cannot check KHR surface support!");
         }
 
         if (presentSupport) {
@@ -251,14 +251,6 @@ std::vector<const char*> VulkanWindow::getRequiredExtensions() {
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
     return extensions;
-}
-
-void VulkanWindow::error(const std::string& errorType, const std::string& errorMessage) {
-    std::ostringstream stringStream;
-
-    stringStream << errorType << ":\n        " << errorMessage << "\n";
-
-    throw std::runtime_error(stringStream.str());
 }
 
 VulkanWindow::~VulkanWindow() {

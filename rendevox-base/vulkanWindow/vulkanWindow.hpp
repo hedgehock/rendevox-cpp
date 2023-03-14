@@ -47,7 +47,6 @@ private:
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
     bool isDeviceSuitable(vk::PhysicalDevice device);
-    static void error(const std::string& errorType, const std::string& errorMessage);
 };
 
 #endif

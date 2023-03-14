@@ -11,6 +11,7 @@
 
 #include "vector2.hpp"
 #include "vector3.hpp"
+#include "vulkanException/VulkanError.hpp"
 #include "window/window.hpp"
 #include "openglWindow/openglWindow.hpp"
 #include "openglRender/openglRender.hpp"
