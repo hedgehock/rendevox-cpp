@@ -150,7 +150,7 @@ void VulkanWindow::createLogicalDevice() {
     std::cout << "Logical device was created.\n";
 
     graphicsQueue = logicalDevice->getQueue(indices.getGraphicsFamily.value(), 0);
-    presentQueue = logicalDevice->getQueue(indices.getPresentFamily.value(), 0);
+    presentQueue = logicalDevice->getQueue(indices.getPresentFamily.value(), 1);
 
 }
 
@@ -164,17 +164,19 @@ void VulkanWindow::mainLoop() {
 
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
     queueFamilyIndices indices = findQueueFamilies(device);
+    auto features = device.getFeatures();
     bool swapChainAdequate = false;
     bool extensionsSupported = checkDeviceExtensionSupport(device);
     bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
                              device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
+    bool otherOptions = features.geometryShader;
 
     if (extensionsSupported) {
         swapChainSupportDetails swapChainSupport = querySwapChainSupport(device);
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
 
-    return (supportedGpuTypes && indices.isComplete() && extensionsSupported && swapChainAdequate);
+    return (supportedGpuTypes && indices.isComplete() && extensionsSupported && swapChainAdequate && otherOptions);
 }
 
 queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
@@ -336,6 +338,10 @@ VulkanWindow::~VulkanWindow() {
     surface.release();
 
     std::cout << "Destructor has ended.";
+}
+
+bool queueFamilyIndices::isComplete() const {
+    return getGraphicsFamily.has_value() || getPresentFamily.has_value();
 }
 
 /* https://github.com/hedgehock/rendevox/blob/vulkan/rendevox/include/vulkanWindow.h

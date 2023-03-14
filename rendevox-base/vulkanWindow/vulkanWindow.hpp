@@ -12,9 +12,7 @@ struct queueFamilyIndices {
     std::optional<uint32_t> getGraphicsFamily;
     std::optional<uint32_t> getPresentFamily;
 
-    bool isComplete() {
-        return getGraphicsFamily.has_value() || getPresentFamily.has_value();
-    }
+    [[nodiscard]] bool isComplete() const;
 };
 
 struct swapChainSupportDetails {
