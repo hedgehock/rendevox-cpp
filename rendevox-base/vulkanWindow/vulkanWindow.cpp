@@ -1,9 +1,11 @@
+#define GLFW_INCLUDE_VULKAN
+
 #include <rendevox-base.hpp>
 
 VulkanWindow::VulkanWindow(Rendevox::Window& windowInfo) {
-    this->initWindow(windowInfo);
-    this->initVulkan();
-    this->mainLoop();
+    initWindow(windowInfo);
+    initVulkan();
+    mainLoop();
 }
 
 void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
@@ -12,20 +14,21 @@ void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    this->window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
-
+    window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
 
 }
 
 void VulkanWindow::initVulkan() {
-    this->createInstance();
-    this->pickPhysicalDevice();
-    this->createLogicalDevice();
+    createInstance();
+    createSurface();
+    pickPhysicalDevice();
+    createLogicalDevice();
 }
 
 void VulkanWindow::createInstance() {
     try {
-        this->instance = vk::createInstanceUnique(
+        auto extensions = getRequiredExtensions();
+        instance = vk::createInstanceUnique(
                 vk::InstanceCreateInfo{
                         vk::InstanceCreateFlags(),
                         &(const vk::ApplicationInfo&) vk::ApplicationInfo{
@@ -37,20 +40,31 @@ void VulkanWindow::createInstance() {
                         },
                         0,
                         nullptr,
-                        0,
-                        nullptr,
+                        static_cast<uint32_t>(extensions.size()),
+                        extensions.data(),
+                        nullptr
                 }
         );
 
         std::cout << "Instance was created\n";
     } catch (vk::IncompatibleDriverError& error) {
-        VulkanWindow::error("Vulkan Error: Failed to create instance! \'Incompatible Driver Error.\'");
+        VulkanWindow::error("Vulkan Error", "Failed to create instance! \'Incompatible Driver Error.\'");
     }
 
 }
 
+void VulkanWindow::createSurface() {
+    VkSurfaceKHR vkSurfaceKhrLocal;
+
+    if (glfwCreateWindowSurface(instance->operator VkInstance(), window, nullptr, &vkSurfaceKhrLocal) != VK_SUCCESS) {
+        VulkanWindow::error("Glfw Error", "Failed to create window surface.");
+    }
+
+    surface = vk::UniqueSurfaceKHR(vkSurfaceKhrLocal);
+}
+
 void VulkanWindow::pickPhysicalDevice() {
-    std::vector<vk::PhysicalDevice> deviceList = this->instance->enumeratePhysicalDevices();
+    std::vector<vk::PhysicalDevice> deviceList = instance->enumeratePhysicalDevices();
 
     if (!deviceList.empty()) {
 
@@ -71,69 +85,74 @@ void VulkanWindow::pickPhysicalDevice() {
 
         for (vk::PhysicalDevice device: deviceList) {
             if (VulkanWindow::isDeviceSuitable(device)) {
-                this->physicalDevice = device;
+                physicalDevice = device;
                 break;
             }
         }
 
-        if (std::find(deviceList.begin(), deviceList.end(), this->physicalDevice)->operator!=(this->physicalDevice)) {
-            VulkanWindow::error("Rendevox Error: Failed to pick Physical device! \'Incompatible GPU.\'");
+        if (std::find(deviceList.begin(), deviceList.end(), physicalDevice)->operator!=(physicalDevice)) {
+            VulkanWindow::error("Rendevox Error", "Failed to pick Physical device! \'Incompatible GPU.\'");
         } else {
-            std::cout << "Using GPU: " << this->physicalDevice.getProperties().deviceName << "\n\n";
+            std::cout << "Using GPU: " << physicalDevice.getProperties().deviceName << "\n\n";
         }
 
     } else {
-        VulkanWindow::error("No GPU found!");
+        VulkanWindow::error("Incompatibility error", "No GPU found!");
     }
 
 }
 
 void VulkanWindow::createLogicalDevice() {
-    queueFamilyIndices indices = VulkanWindow::findQueueFamilies(this->physicalDevice);
+    queueFamilyIndices indices = VulkanWindow::findQueueFamilies(physicalDevice);
+
+    std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
+    std::vector<uint32_t> uniqueQueueFamilies = {indices.getGraphicsFamily.value(), indices.getPresentFamily.value()};
 
     float queuePriority = 1.0f;
+    for (uint32_t queueFamily: uniqueQueueFamilies) {
+        vk::DeviceQueueCreateInfo queueCreateInfo(
+                vk::DeviceQueueCreateFlags(),
+                queueFamily,
+                1,
+                &queuePriority,
+                nullptr
+                );
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
 
-    vk::DeviceQueueCreateInfo queueCreateInfos[1];
-
-    queueCreateInfos[0] = vk::DeviceQueueCreateInfo{
-            vk::DeviceQueueCreateFlags(),
-            indices.getGraphicsFamily.value(),
-            1,
-            &queuePriority,
-            nullptr
-
-
-    };
-
-    this->logicalDevice = physicalDevice.createDeviceUnique(
-            vk::DeviceCreateInfo(
-                    vk::DeviceCreateFlags(),
-                    sizeof(queueCreateInfos) / sizeof(vk::DeviceQueueCreateInfo),
-                    queueCreateInfos,
-                    0, nullptr,
-                    0, nullptr,
-                    nullptr,
-                    nullptr
-            )
-    );
+    try {
+        logicalDevice = physicalDevice.createDeviceUnique(
+                vk::DeviceCreateInfo(
+                        vk::DeviceCreateFlags(),
+                        queueCreateInfos.size(),
+                        queueCreateInfos.data(),
+                        0, nullptr,
+                        0, nullptr,
+                        nullptr,
+                        nullptr
+                )
+        );
+    } catch (std::exception& error) {
+        VulkanWindow::error("Vulkan error:", "Cannot create logical device!");
+    }
 
     std::cout << "Logical device was created.\n";
 
-    this->graphicsQueue = this->logicalDevice->getQueue(indices.getGraphicsFamily.value(), 0);
-
+    graphicsQueue = logicalDevice->getQueue(indices.getGraphicsFamily.value(), 0);
+    presentQueue = logicalDevice->getQueue(indices.getPresentFamily.value(), 0);
 
 }
 
 void VulkanWindow::mainLoop() {
 
-    while (!glfwWindowShouldClose(this->window)) {
+    while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
     }
 
 }
 
 bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
-    queueFamilyIndices indices = VulkanWindow::findQueueFamilies(device);
+    queueFamilyIndices indices = findQueueFamilies(device);
 
     bool supportedGpuTypes = device.getProperties().deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
                              device.getProperties().deviceType == vk::PhysicalDeviceType::eIntegratedGpu;
@@ -146,6 +165,7 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     uint32_t queueFamilyCount;
     device.getQueueFamilyProperties(&queueFamilyCount, nullptr);
     vk::QueueFamilyProperties queueFamilies[queueFamilyCount];
+    VkBool32 presentSupport = false;
 
     device.getQueueFamilyProperties(&queueFamilyCount, queueFamilies);
 
@@ -158,6 +178,14 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
         }
 
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer) {
+        }
+
+        if (device.getSurfaceSupportKHR(i, surface->operator VkSurfaceKHR(), &presentSupport) != vk::Result::eSuccess) {
+            VulkanWindow::error("Vulkan error", "Cannot check KHR surface support!");
+        }
+
+        if (presentSupport) {
+            indices.getPresentFamily = i;
         }
 
         if (indices.isComplete()) {
@@ -215,16 +243,30 @@ void VulkanWindow::printPhysicalDeviceInfo(vk::PhysicalDevice device) {
 
 }
 
-void VulkanWindow::error(const std::string& errorMessage) {
-    std::cout << "Error: " << errorMessage << "\n";
-    exit(EXIT_FAILURE);
+std::vector<const char*> VulkanWindow::getRequiredExtensions() {
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions;
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+    return extensions;
+}
+
+void VulkanWindow::error(const std::string& errorType, const std::string& errorMessage) {
+    std::ostringstream stringStream;
+
+    stringStream << errorType << ":\n        " << errorMessage << "\n";
+
+    throw std::runtime_error(stringStream.str());
 }
 
 VulkanWindow::~VulkanWindow() {
-
-    glfwDestroyWindow(this->window);
+    glfwDestroyWindow(window);
 
     glfwTerminate();
+
+    surface.release();
 
     std::cout << "Destructor has ended.";
 }

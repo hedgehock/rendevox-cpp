@@ -10,9 +10,10 @@
 
 struct queueFamilyIndices {
     std::optional<uint32_t> getGraphicsFamily;
+    std::optional<uint32_t> getPresentFamily;
 
     bool isComplete() {
-        return this->getGraphicsFamily.has_value();
+        return getGraphicsFamily.has_value() || getPresentFamily.has_value();
     }
 };
 
@@ -24,9 +25,11 @@ public:
 
 private:
     vk::UniqueInstance instance;
+    vk::UniqueSurfaceKHR surface;
     vk::PhysicalDevice physicalDevice;
     vk::UniqueDevice logicalDevice;
     vk::Queue graphicsQueue;
+    vk::Queue presentQueue;
     GLFWwindow* window{};
 
     void initWindow(Rendevox::Window& windowInfo);
@@ -34,15 +37,17 @@ private:
     void mainLoop();
 
     void createInstance();
+    void createSurface();
     void pickPhysicalDevice();
     void createLogicalDevice();
 
-    static queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
+    queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
+    static std::vector<const char*> getRequiredExtensions();
     bool checkDeviceExtensionSupport(VkPhysicalDevice device);
 
-    static bool isDeviceSuitable(vk::PhysicalDevice device);
-    static void error(const std::string& errorMessage);
+    bool isDeviceSuitable(vk::PhysicalDevice device);
+    static void error(const std::string& errorType, const std::string& errorMessage);
 };
 
 #endif
