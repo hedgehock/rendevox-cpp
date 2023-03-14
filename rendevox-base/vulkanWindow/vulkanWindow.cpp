@@ -129,6 +129,8 @@ void VulkanWindow::createLogicalDevice() {
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
+    auto features = physicalDevice.getFeatures();
+
     try {
         logicalDevice = physicalDevice.createDeviceUnique(
                 vk::DeviceCreateInfo(
@@ -137,7 +139,7 @@ void VulkanWindow::createLogicalDevice() {
                         queueCreateInfos.data(),
                         0, nullptr,
                         deviceExtensions.size(), deviceExtensions.data(),
-                        nullptr,
+                        &features,
                         nullptr
                 )
         );
