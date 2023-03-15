@@ -46,9 +46,11 @@ private:
     void createLogicalDevice();
 
     bool isDeviceSuitable(vk::PhysicalDevice device);
-    queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
 
+    queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     swapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
+    vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+
     static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
     static std::vector<const char*> getRequiredExtensions();
     static bool checkDeviceExtensionSupport(vk::PhysicalDevice device);

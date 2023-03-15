@@ -332,6 +332,10 @@ swapChainSupportDetails VulkanWindow::querySwapChainSupport(vk::PhysicalDevice d
     return details;
 }
 
+vk::SurfaceFormatKHR VulkanWindow::chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats) {
+
+}
+
 VulkanWindow::~VulkanWindow() {
     glfwDestroyWindow(window);
 
