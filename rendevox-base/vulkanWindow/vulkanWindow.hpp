@@ -28,13 +28,20 @@ public:
     ~VulkanWindow();
 
 private:
+    GLFWwindow* window{};
+
     vk::UniqueInstance instance;
     vk::UniqueSurfaceKHR surface;
     vk::PhysicalDevice physicalDevice;
     vk::UniqueDevice logicalDevice;
+
     vk::Queue graphicsQueue;
     vk::Queue presentQueue;
-    GLFWwindow* window{};
+
+    vk::UniqueSwapchainKHR swapChain;
+    std::vector<vk::UniqueImage> swapChainImages;
+    vk::Format swapChainImageFormat;
+    vk::Extent2D swapChainExtent;
 
     void initWindow(Rendevox::Window& windowInfo);
     void initVulkan();
@@ -44,13 +51,16 @@ private:
     void createSurface();
     void pickPhysicalDevice();
     void createLogicalDevice();
+    void createSwapChain();
 
     bool isDeviceSuitable(vk::PhysicalDevice device);
 
     queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     swapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
-    vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+    vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
 
+    static vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+    static vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);
     static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
     static std::vector<const char*> getRequiredExtensions();
     static bool checkDeviceExtensionSupport(vk::PhysicalDevice device);

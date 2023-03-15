@@ -6,6 +6,7 @@
 #include <utility>
 #include <string>
 #include <optional>
+#include <limits>
 
 #include "glad/glad.hpp"
 
