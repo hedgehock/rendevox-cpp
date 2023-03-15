@@ -423,7 +423,7 @@ VulkanWindow::~VulkanWindow() {
 }
 
 bool queueFamilyIndices::isComplete() const {
-    return getGraphicsFamily.has_value() || getPresentFamily.has_value();
+    return getGraphicsFamily.has_value() && getPresentFamily.has_value();
 }
 
 /* https://github.com/hedgehock/rendevox/blob/vulkan/rendevox/include/vulkanWindow.h
