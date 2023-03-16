@@ -13,10 +13,11 @@ elseif(UNIX)
 elseif(WIN32)
     find_package(Vulkan REQUIRED)
     find_package(OpenAL REQUIRED)
+    find_package(fmt REQUIRED)
 
     include_directories(/c/msys64/mingw64/include)
     link_directories(/c/msys64/mingw64/lib)
-    link_libraries(mingw32 Vulkan::Vulkan OpenAL::OpenAL glfw3 glu32 opengl32 gdi32 m)
+    link_libraries(mingw32 fmt::fmt Vulkan::Vulkan OpenAL::OpenAL glfw3 glu32 opengl32 gdi32 m)
 endif()
 
 file(GLOB SRC rendevox-base/*/*.cpp)

@@ -40,8 +40,10 @@ private:
 
     vk::UniqueSwapchainKHR swapChain;
     std::vector<vk::UniqueImage> swapChainImages;
-    vk::Format swapChainImageFormat;
+    vk::Format swapChainImageFormat{};
     vk::Extent2D swapChainExtent;
+
+    std::vector<vk::UniqueImageView> swapChainImagesViews;
 
     void initWindow(Rendevox::Window& windowInfo);
     void initVulkan();
@@ -52,6 +54,7 @@ private:
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createSwapChain();
+    void createImageViews();
 
     bool isDeviceSuitable(vk::PhysicalDevice device);
 

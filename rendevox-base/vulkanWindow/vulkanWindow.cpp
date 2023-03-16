@@ -33,6 +33,7 @@ void VulkanWindow::initVulkan() {
     pickPhysicalDevice();
     createLogicalDevice();
     createSwapChain();
+    createImageViews();
 }
 
 void VulkanWindow::createInstance() {
@@ -393,7 +394,7 @@ void VulkanWindow::createSwapChain() {
         throw VulkanError("Cannot create swap chain!");
     }
 
-    if (logicalDevice->getSwapchainImagesKHR(swapChain->operator VkSwapchainKHR(), &imageCount, nullptr) !=
+    if (logicalDevice.get().getSwapchainImagesKHR(swapChain->operator VkSwapchainKHR(), &imageCount, nullptr) !=
         vk::Result::eSuccess) {
         throw VulkanError("Failed to get swap chain KHR image count.");
     }
@@ -408,7 +409,39 @@ void VulkanWindow::createSwapChain() {
 
 }
 
+void VulkanWindow::createImageViews() {
+    swapChainImagesViews.resize(swapChainImages.size());
+
+    for (size_t i = 0; i < swapChainImages.size(); i++) {
+        try {
+            swapChainImagesViews[i] = logicalDevice->createImageViewUnique(vk::ImageViewCreateInfo(
+                    vk::ImageViewCreateFlags(),
+                    swapChainImages[i]->operator VkImage(),
+                    vk::ImageViewType::e2D,
+                    swapChainImageFormat,
+                    vk::ComponentMapping(
+                            vk::ComponentSwizzle::eIdentity,
+                            vk::ComponentSwizzle::eIdentity,
+                            vk::ComponentSwizzle::eIdentity,
+                            vk::ComponentSwizzle::eIdentity
+                            ),
+                    vk::ImageSubresourceRange(
+                            vk::ImageAspectFlagBits::eColor,
+                            0,
+                            1,
+                            0,
+                            1
+                            )
+                    ));
+        } catch (std::exception& error) {
+            throw VulkanError(fmt::format("Failed to get swap chain image view at index {}!", i).c_str());
+        }
+    }
+}
+
 VulkanWindow::~VulkanWindow() {
+    swapChainImagesViews.data()->release();
+
     swapChainImages.data()->release();
 
     swapChain.release();

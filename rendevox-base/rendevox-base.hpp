@@ -5,8 +5,10 @@
 #include <cstring>
 #include <utility>
 #include <string>
+#include <string_view>
 #include <optional>
 #include <limits>
+#include <fmt/format.h>
 
 #include "glad/glad.hpp"
 
