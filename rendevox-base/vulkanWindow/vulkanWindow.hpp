@@ -39,7 +39,7 @@ private:
     vk::Queue presentQueue;
 
     vk::UniqueSwapchainKHR swapChain;
-    std::vector<vk::UniqueImage> swapChainImages;
+    std::vector<vk::Image> swapChainImages;
     vk::Format swapChainImageFormat{};
     vk::Extent2D swapChainExtent;
 

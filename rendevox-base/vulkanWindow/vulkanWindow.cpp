@@ -400,7 +400,7 @@ void VulkanWindow::createSwapChain() {
     }
     swapChainImages.resize(imageCount);
     if (logicalDevice->getSwapchainImagesKHR(swapChain->operator VkSwapchainKHR(), &imageCount,
-                                             swapChainImages.data()->operator->()) != vk::Result::eSuccess) {
+                                             swapChainImages.data()) != vk::Result::eSuccess) {
         throw VulkanError("Failed to get swap chain KHR images.");
     }
 
@@ -416,7 +416,7 @@ void VulkanWindow::createImageViews() {
         try {
             swapChainImagesViews[i] = logicalDevice->createImageViewUnique(vk::ImageViewCreateInfo(
                     vk::ImageViewCreateFlags(),
-                    swapChainImages[i]->operator VkImage(),
+                    swapChainImages[i],
                     vk::ImageViewType::e2D,
                     swapChainImageFormat,
                     vk::ComponentMapping(
@@ -441,8 +441,6 @@ void VulkanWindow::createImageViews() {
 
 VulkanWindow::~VulkanWindow() {
     swapChainImagesViews.data()->release();
-
-    swapChainImages.data()->release();
 
     swapChain.release();
 
