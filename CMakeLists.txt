@@ -28,12 +28,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #add_executable(rendevox app/main.c)
 #compile_shader(rendevox
-#    ENV vulkan
+#    ENV opengl
 #    FORMAT num
 #    SOURCES
 #        rendevox.vert
 #        rendevox.frag
 #)
+#
+#
+# https://stackoverflow.com/questions/60420700/cmake-invocation-of-glslc-with-respect-to-includes-dependencies
+
 
 if (APPLE)
     include_directories(/usr/local/include)
