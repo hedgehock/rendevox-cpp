@@ -34,6 +34,7 @@ void VulkanWindow::initVulkan() {
     createLogicalDevice();
     createSwapChain();
     createImageViews();
+    createGraphicsPipeline();
 }
 
 void VulkanWindow::createInstance() {
@@ -437,6 +438,10 @@ void VulkanWindow::createImageViews() {
             throw VulkanError(fmt::format("Failed to get swap chain image view at index {}!", i).c_str());
         }
     }
+}
+
+void VulkanWindow::createGraphicsPipeline() {
+
 }
 
 VulkanWindow::~VulkanWindow() {

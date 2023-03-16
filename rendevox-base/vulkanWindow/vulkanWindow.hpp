@@ -55,6 +55,7 @@ private:
     void createLogicalDevice();
     void createSwapChain();
     void createImageViews();
+    void createGraphicsPipeline();
 
     bool isDeviceSuitable(vk::PhysicalDevice device);
 
