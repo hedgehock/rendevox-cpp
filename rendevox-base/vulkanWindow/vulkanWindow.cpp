@@ -441,7 +441,8 @@ void VulkanWindow::createImageViews() {
 }
 
 void VulkanWindow::createGraphicsPipeline() {
-
+    auto vertShaderCode = readFile("rendevox-base/vulkanWindow/shaders/shader.vert.spv");
+    auto fragShaderCode = readFile("rendevox-base/vulkanWindow/shaders/shader.frag.spv");
 }
 
 std::vector<char> VulkanWindow::readFile(const std::string& filename) {
@@ -455,7 +456,11 @@ std::vector<char> VulkanWindow::readFile(const std::string& filename) {
     std::vector<char> buffer(fileSize);
 
     file.seekg(0);
-    file.read(buffer.data(), fileSize);
+    file.read(buffer.data(), std::streamsize(fileSize));
+
+    file.close();
+
+    return buffer;
 }
 
 VulkanWindow::~VulkanWindow() {

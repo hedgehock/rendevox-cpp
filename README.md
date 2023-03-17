@@ -50,6 +50,7 @@ $ pacman -S mingw-w64-x86_64-glfw
 $ pacman -S mingw-w64-x86_64-vulkan-devel
 $ pacman -S mingw-w64-x86_64-openal
 $ pacman -S mingw-w64-x86_64-fmt
+$ pacman -S mingw-w64-x86_64-shaderc
 ```
 
 - C++17 compiler
@@ -59,6 +60,7 @@ $ pacman -S mingw-w64-x86_64-fmt
 - Vulkan
 - OpenAL
 - FMT
+- GLSLC
 
 ## Features
 - 2D & 3D rendering
@@ -90,3 +92,15 @@ $ .\run-win.cmd
 ```
 $ cmd <./run-win.cmd
 ```
+
+## Rules
+
+### Vulkan
+- Shaders are stored in `./rendevox-base/vulkanWindow/shaders/*.frag | *.vert`
+- Shaders are compiled to dir `./build/rendevox-base/vulkanWindow/shaders/*.spv`
+- In c++ file open use dir `./rendevox-base/vulkanWindow/shaders/*.spv`
+- Compiled shader format from `shader.frag` is `shader.frag.spv`
+
+### OpenGL
+
+### OpenAL
