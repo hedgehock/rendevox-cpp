@@ -68,6 +68,7 @@ private:
     static void printPhysicalDeviceInfo(vk::PhysicalDevice device);
     static std::vector<const char*> getRequiredExtensions();
     static bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
+    static std::vector<char> readFile(const std::string& filename);
 };
 
 #endif

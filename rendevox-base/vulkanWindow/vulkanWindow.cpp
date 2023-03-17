@@ -444,6 +444,20 @@ void VulkanWindow::createGraphicsPipeline() {
 
 }
 
+std::vector<char> VulkanWindow::readFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open()) {
+        throw RendevoxError("Failed to open file!");
+    }
+
+    size_t fileSize = (size_t) file.tellg();
+    std::vector<char> buffer(fileSize);
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+}
+
 VulkanWindow::~VulkanWindow() {
     swapChainImagesViews.data()->release();
 
