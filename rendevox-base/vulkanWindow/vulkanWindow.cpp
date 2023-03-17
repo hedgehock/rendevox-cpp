@@ -565,6 +565,83 @@ void VulkanWindow::createGraphicsPipeline() {
                     nullptr)
     };
 
+    vk::PipelineVertexInputStateCreateInfo vertexInputInfo = vk::PipelineVertexInputStateCreateInfo(
+            vk::PipelineVertexInputStateCreateFlags(),
+            0,
+            nullptr,
+            0,
+            nullptr);
+
+    vk::PipelineInputAssemblyStateCreateInfo inputAssembly = vk::PipelineInputAssemblyStateCreateInfo(
+            vk::PipelineInputAssemblyStateCreateFlags(),
+            vk::PrimitiveTopology::eTriangleList,
+            VK_FALSE);
+
+    vk::PipelineViewportStateCreateInfo viewportState = vk::PipelineViewportStateCreateInfo(
+            vk::PipelineViewportStateCreateFlags(),
+            1,
+            nullptr,
+            1,
+            nullptr);
+
+    vk::PipelineRasterizationStateCreateInfo rasterizer;
+    rasterizer.sType = vk::StructureType::ePipelineRasterizationStateCreateInfo;
+        rasterizer.depthClampEnable = VK_FALSE;
+        rasterizer.rasterizerDiscardEnable = VK_FALSE;
+        rasterizer.polygonMode = vk::PolygonMode::eFill;
+        rasterizer.lineWidth = 1.0f;
+        rasterizer.cullMode = vk::CullModeFlagBits::eBack;
+        rasterizer.frontFace = vk::FrontFace::eClockwise;
+        rasterizer.depthBiasEnable = VK_FALSE;
+
+    vk::PipelineMultisampleStateCreateInfo multisampling{};
+    multisampling.sType = vk::StructureType::ePipelineMultisampleStateCreateInfo;
+    multisampling.sampleShadingEnable = VK_FALSE;
+    multisampling.rasterizationSamples = vk::SampleCountFlagBits::e1;
+
+    vk::PipelineColorBlendAttachmentState colorBlendAttachment{};
+    colorBlendAttachment.colorWriteMask =
+            vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB |
+            vk::ColorComponentFlagBits::eA;
+    colorBlendAttachment.blendEnable = VK_FALSE;
+
+    vk::PipelineColorBlendStateCreateInfo colorBlending = vk::PipelineColorBlendStateCreateInfo(
+            vk::PipelineColorBlendStateCreateFlags(),
+            VK_FALSE,
+            vk::LogicOp::eCopy,
+            1,
+            &colorBlendAttachment,
+            {
+                    0.0f,
+                    0.0f,
+                    0.0f,
+                    0.0f
+            });
+
+    std::vector<vk::DynamicState> dynamicStates = {
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor
+    };
+
+    vk::PipelineDynamicStateCreateInfo dynamicState = vk::PipelineDynamicStateCreateInfo(
+            vk::PipelineDynamicStateCreateFlags(),
+            static_cast<uint32_t>(dynamicStates.size()),
+            dynamicStates.data());
+
+    vk::PipelineLayoutCreateInfo pipelineLayoutInfo = vk::PipelineLayoutCreateInfo(
+            vk::PipelineLayoutCreateFlags(),
+            0,
+            nullptr,
+            0,
+            nullptr
+            );
+
+    try {
+        pipelineLayout = logicalDevice->createPipelineLayoutUnique(pipelineLayoutInfo);
+    } catch (std::exception& error) {
+        throw VulkanError("Failed to create pipeline layout!");
+    }
+
     vertShaderModule.release();
     fragShaderModule.release();
 }

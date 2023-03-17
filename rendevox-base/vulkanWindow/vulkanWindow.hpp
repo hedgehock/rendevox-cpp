@@ -42,8 +42,9 @@ private:
     std::vector<vk::Image> swapChainImages;
     vk::Format swapChainImageFormat{};
     vk::Extent2D swapChainExtent;
-
     std::vector<vk::UniqueImageView> swapChainImagesViews;
+
+    vk::UniquePipelineLayout pipelineLayout;
 
     void initWindow(Rendevox::Window& windowInfo);
     void initVulkan();

@@ -26,9 +26,7 @@ function(compile_shader target)
     endforeach ()
 endfunction()
 
-
 #https://stackoverflow.com/questions/60420700/cmake-invocation-of-glslc-with-respect-to-includes-dependencies
-
 
 if (APPLE)
     include_directories(/usr/local/include)
