@@ -685,6 +685,8 @@ vk::UniqueShaderModule VulkanWindow::createShaderModule(const std::vector<char>&
 }
 
 VulkanWindow::~VulkanWindow() {
+    pipelineLayout.release();
+
     swapChainImagesViews.data()->release();
 
     swapChain.release();
