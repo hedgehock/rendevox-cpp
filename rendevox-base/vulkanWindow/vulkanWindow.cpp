@@ -13,16 +13,33 @@ VulkanWindow::VulkanWindow(Rendevox::Window& windowInfo) {
 void VulkanWindow::initWindow(Rendevox::Window& windowInfo) {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(
+            GLFW_CONTEXT_VERSION_MAJOR,
+            3);
+    glfwWindowHint(
+            GLFW_CONTEXT_VERSION_MINOR,
+            3);
+    glfwWindowHint(
+            GLFW_CLIENT_API,
+            GLFW_NO_API);
+    glfwWindowHint(
+            GLFW_RESIZABLE,
+            GLFW_FALSE);
 
     if (windowInfo.fullscreen) {
-        window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, glfwGetPrimaryMonitor(),
-                                  nullptr);
+        window = glfwCreateWindow(
+                windowInfo.width,
+                windowInfo.height,
+                windowInfo.title,
+                glfwGetPrimaryMonitor(),
+                nullptr);
     } else {
-        window = glfwCreateWindow(windowInfo.width, windowInfo.height, windowInfo.title, nullptr, nullptr);
+        window = glfwCreateWindow(
+                windowInfo.width,
+                windowInfo.height,
+                windowInfo.title,
+                nullptr,
+                nullptr);
     }
 
 }
@@ -40,13 +57,24 @@ void VulkanWindow::initVulkan() {
 void VulkanWindow::createInstance() {
     try {
         auto extensions = getRequiredExtensions();
-        instance = vk::createInstanceUnique(vk::InstanceCreateInfo{vk::InstanceCreateFlags(),
-                                                                   &(const vk::ApplicationInfo&) vk::ApplicationInfo{
-                                                                           "Rendevox-test", VK_MAKE_VERSION(0, 0, 0),
-                                                                           "Rendevox", VK_MAKE_VERSION(0, 0, 0),
-                                                                           VK_API_VERSION_1_3,}, 0, nullptr,
-                                                                   static_cast<uint32_t>(extensions.size()),
-                                                                   extensions.data(), nullptr});
+        instance = vk::createInstanceUnique(
+                vk::InstanceCreateInfo(
+                        vk::InstanceCreateFlags(),
+                        &(const vk::ApplicationInfo&) vk::ApplicationInfo(
+                                "Rendevox-test",
+                                VK_MAKE_VERSION(0,
+                                                0,
+                                                0),
+                                "Rendevox",
+                                VK_MAKE_VERSION(0,
+                                                0,
+                                                0),
+                                VK_API_VERSION_1_3),
+                        0,
+                        nullptr,
+                        static_cast<uint32_t>(extensions.size()),
+                        extensions.data(),
+                        nullptr));
 
         std::cout << "Instance was created\n";
     } catch (std::exception& error) {
@@ -58,7 +86,11 @@ void VulkanWindow::createInstance() {
 void VulkanWindow::createSurface() {
     VkSurfaceKHR vkSurfaceKhrLocal;
 
-    if (glfwCreateWindowSurface(instance->operator VkInstance(), window, nullptr, &vkSurfaceKhrLocal) != VK_SUCCESS) {
+    if (glfwCreateWindowSurface(
+            instance->operator VkInstance(),
+            window,
+            nullptr,
+            &vkSurfaceKhrLocal) != VK_SUCCESS) {
         throw GLFWError("Failed to create window surface.");
     }
 
@@ -92,7 +124,10 @@ void VulkanWindow::pickPhysicalDevice() {
             }
         }
 
-        if (std::find(deviceList.begin(), deviceList.end(), physicalDevice)->operator!=(physicalDevice)) {
+        if (std::find(
+                deviceList.begin(),
+                deviceList.end(),
+                physicalDevice)->operator!=(physicalDevice)) {
             throw RendevoxError("Failed to pick Physical device! \'Incompatible GPU.\'");
         } else {
             std::cout << "Using GPU: " << physicalDevice.getProperties().deviceName << "\n\n";
@@ -108,12 +143,19 @@ void VulkanWindow::createLogicalDevice() {
     queueFamilyIndices indices = VulkanWindow::findQueueFamilies(physicalDevice);
 
     std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos(0);
-    std::vector<uint32_t> uniqueQueueFamilies = {indices.getGraphicsFamily.value(), indices.getPresentFamily.value()};
+    std::vector<uint32_t> uniqueQueueFamilies = {
+            indices.getGraphicsFamily.value(),
+            indices.getPresentFamily.value()
+    };
 
     for (uint32_t queueFamily: uniqueQueueFamilies) {
         float queuePriority = 1.0f;
-        vk::DeviceQueueCreateInfo queueCreateInfo(vk::DeviceQueueCreateFlags(), queueFamily, 1, &queuePriority,
-                                                  nullptr);
+        vk::DeviceQueueCreateInfo queueCreateInfo(
+                vk::DeviceQueueCreateFlags(),
+                queueFamily,
+                1,
+                &queuePriority,
+                nullptr);
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
@@ -121,16 +163,28 @@ void VulkanWindow::createLogicalDevice() {
 
     try {
         logicalDevice = physicalDevice.createDeviceUnique(
-                vk::DeviceCreateInfo(vk::DeviceCreateFlags(), queueCreateInfos.size(), queueCreateInfos.data(), 0,
-                                     nullptr, deviceExtensions.size(), deviceExtensions.data(), &features, nullptr));
+                vk::DeviceCreateInfo(
+                        vk::DeviceCreateFlags(),
+                        queueCreateInfos.size(),
+                        queueCreateInfos.data(),
+                        0,
+                        nullptr,
+                        deviceExtensions.size(),
+                        deviceExtensions.data(),
+                        &features,
+                        nullptr));
     } catch (std::exception& error) {
         throw VulkanError("Cannot create logical device!");
     }
 
     std::cout << "Logical device was created.\n";
 
-    graphicsQueue = logicalDevice->getQueue(indices.getGraphicsFamily.value(), 0);
-    presentQueue = logicalDevice->getQueue(indices.getPresentFamily.value(), 0);
+    graphicsQueue = logicalDevice->getQueue(
+            indices.getGraphicsFamily.value(),
+            0);
+    presentQueue = logicalDevice->getQueue(
+            indices.getPresentFamily.value(),
+            0);
 
 }
 
@@ -161,11 +215,15 @@ bool VulkanWindow::isDeviceSuitable(vk::PhysicalDevice device) {
 queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
     queueFamilyIndices indices{};
     uint32_t queueFamilyCount;
-    device.getQueueFamilyProperties(&queueFamilyCount, nullptr);
+    device.getQueueFamilyProperties(
+            &queueFamilyCount,
+            nullptr);
     vk::QueueFamilyProperties queueFamilies[queueFamilyCount];
     VkBool32 presentSupport = false;
 
-    device.getQueueFamilyProperties(&queueFamilyCount, queueFamilies);
+    device.getQueueFamilyProperties(
+            &queueFamilyCount,
+            queueFamilies);
 
     for (int i = 0; i < queueFamilyCount; i++) {
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics) {
@@ -178,7 +236,10 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
         if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer) {
         }
 
-        if (device.getSurfaceSupportKHR(i, surface->operator VkSurfaceKHR(), &presentSupport) != vk::Result::eSuccess) {
+        if (device.getSurfaceSupportKHR(
+                i,
+                surface->operator VkSurfaceKHR(),
+                &presentSupport) != vk::Result::eSuccess) {
             throw VulkanError("Cannot check KHR surface support!");
         }
 
@@ -197,14 +258,19 @@ queueFamilyIndices VulkanWindow::findQueueFamilies(vk::PhysicalDevice device) {
 
 bool VulkanWindow::checkDeviceExtensionSupport(vk::PhysicalDevice device) {
     uint32_t extensionCount;
-    if (device.enumerateDeviceExtensionProperties(nullptr, &extensionCount, nullptr) != vk::Result::eSuccess) {
+    if (device.enumerateDeviceExtensionProperties(
+            nullptr,
+            &extensionCount,
+            nullptr) != vk::Result::eSuccess) {
         throw VulkanError("Cannot get extension count!");
     }
 
     std::vector<vk::ExtensionProperties> availableExtensions(extensionCount);
 
-    if (device.enumerateDeviceExtensionProperties(nullptr, &extensionCount, availableExtensions.data()) !=
-        vk::Result::eSuccess) {
+    if (device.enumerateDeviceExtensionProperties(
+            nullptr,
+            &extensionCount,
+            availableExtensions.data()) != vk::Result::eSuccess) {
         throw VulkanError("Cannot get extension names!");
     }
 
@@ -212,7 +278,9 @@ bool VulkanWindow::checkDeviceExtensionSupport(vk::PhysicalDevice device) {
 
     for (auto deviceExtension: deviceExtensions) {
         for (int e = 0; e < extensionCount; e++) {
-            if (strcmp(deviceExtension, availableExtensions[e].extensionName) == 0) {
+            if (strcmp(
+                    deviceExtension,
+                    availableExtensions[e].extensionName) == 0) {
                 supportedExtensionCount++;
             }
         }
@@ -269,7 +337,9 @@ std::vector<const char*> VulkanWindow::getRequiredExtensions() {
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    std::vector<const char*> extensions(
+            glfwExtensions,
+            glfwExtensions + glfwExtensionCount);
 
     return extensions;
 }
@@ -279,29 +349,42 @@ swapChainSupportDetails VulkanWindow::querySwapChainSupport(vk::PhysicalDevice d
     uint32_t formatCount;
     uint32_t presentModeCount;
 
-    if (device.getSurfaceCapabilitiesKHR(*surface, &details.capabilities) != vk::Result::eSuccess) {
+    if (device.getSurfaceCapabilitiesKHR(
+            *surface,
+            &details.capabilities) != vk::Result::eSuccess) {
         throw VulkanError("Cannot get KHR surface Capabilities!");
     }
 
-    if (device.getSurfaceFormatsKHR(*surface, &formatCount, nullptr) != vk::Result::eSuccess) {
+    if (device.getSurfaceFormatsKHR(
+            *surface,
+            &formatCount,
+            nullptr) != vk::Result::eSuccess) {
         throw VulkanError("Cannot get number of KHR surface formats!");
     }
 
     if (formatCount != 0) {
         details.formats.resize(formatCount);
-        if (device.getSurfaceFormatsKHR(*surface, &formatCount, details.formats.data()) != vk::Result::eSuccess) {
+        if (device.getSurfaceFormatsKHR(
+                *surface,
+                &formatCount,
+                details.formats.data()) != vk::Result::eSuccess) {
             throw VulkanError("Cannot get KHR surface formats!");
         }
     }
 
-    if (device.getSurfacePresentModesKHR(*surface, &presentModeCount, nullptr) != vk::Result::eSuccess) {
+    if (device.getSurfacePresentModesKHR(
+            *surface,
+            &presentModeCount,
+            nullptr) != vk::Result::eSuccess) {
         throw VulkanError("Cannot get number of present modes!");
     }
 
     if (presentModeCount != 0) {
         details.presentModes.resize(presentModeCount);
-        if (device.getSurfacePresentModesKHR(*surface, &presentModeCount, details.presentModes.data()) !=
-            vk::Result::eSuccess) {
+        if (device.getSurfacePresentModesKHR(
+                *surface,
+                &presentModeCount,
+                details.presentModes.data()) != vk::Result::eSuccess) {
             throw VulkanError("Cannot get present modes!");
         }
     }
@@ -335,14 +418,24 @@ vk::Extent2D VulkanWindow::chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& ca
         return capabilities.currentExtent;
     } else {
         int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
+        glfwGetFramebufferSize(
+                window,
+                &width,
+                &height);
 
-        vk::Extent2D actualExtent = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        vk::Extent2D actualExtent = {
+                static_cast<uint32_t>(width),
+                static_cast<uint32_t>(height)
+        };
 
-        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width,
-                                        capabilities.maxImageExtent.width);
-        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height,
-                                         capabilities.maxImageExtent.height);
+        actualExtent.width = std::clamp(
+                actualExtent.width,
+                capabilities.minImageExtent.width,
+                capabilities.maxImageExtent.width);
+        actualExtent.height = std::clamp(
+                actualExtent.height,
+                capabilities.minImageExtent.height,
+                capabilities.maxImageExtent.height);
 
         return actualExtent;
     }
@@ -372,7 +465,10 @@ void VulkanWindow::createSwapChain() {
     createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
 
     queueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    uint32_t queueFamilyIndices[] = {indices.getGraphicsFamily.value(), indices.getPresentFamily.value()};
+    uint32_t queueFamilyIndices[] = {
+            indices.getGraphicsFamily.value(),
+            indices.getPresentFamily.value()
+    };
 
     if (indices.getGraphicsFamily != indices.getPresentFamily) {
         createInfo.imageSharingMode = vk::SharingMode::eConcurrent;
@@ -390,18 +486,24 @@ void VulkanWindow::createSwapChain() {
     createInfo.oldSwapchain = VK_NULL_HANDLE;
 
     try {
-        swapChain = logicalDevice->createSwapchainKHRUnique(createInfo, nullptr);
+        swapChain = logicalDevice->createSwapchainKHRUnique(
+                createInfo,
+                nullptr);
     } catch (std::exception& error) {
         throw VulkanError("Cannot create swap chain!");
     }
 
-    if (logicalDevice.get().getSwapchainImagesKHR(swapChain->operator VkSwapchainKHR(), &imageCount, nullptr) !=
-        vk::Result::eSuccess) {
+    if (logicalDevice.get().getSwapchainImagesKHR(
+            swapChain->operator VkSwapchainKHR(),
+            &imageCount,
+            nullptr) != vk::Result::eSuccess) {
         throw VulkanError("Failed to get swap chain KHR image count.");
     }
     swapChainImages.resize(imageCount);
-    if (logicalDevice->getSwapchainImagesKHR(swapChain->operator VkSwapchainKHR(), &imageCount,
-                                             swapChainImages.data()) != vk::Result::eSuccess) {
+    if (logicalDevice->getSwapchainImagesKHR(
+            swapChain->operator VkSwapchainKHR(),
+            &imageCount,
+            swapChainImages.data()) != vk::Result::eSuccess) {
         throw VulkanError("Failed to get swap chain KHR images.");
     }
 
@@ -415,27 +517,28 @@ void VulkanWindow::createImageViews() {
 
     for (size_t i = 0; i < swapChainImages.size(); i++) {
         try {
-            swapChainImagesViews[i] = logicalDevice->createImageViewUnique(vk::ImageViewCreateInfo(
-                    vk::ImageViewCreateFlags(),
-                    swapChainImages[i],
-                    vk::ImageViewType::e2D,
-                    swapChainImageFormat,
-                    vk::ComponentMapping(
-                            vk::ComponentSwizzle::eIdentity,
-                            vk::ComponentSwizzle::eIdentity,
-                            vk::ComponentSwizzle::eIdentity,
-                            vk::ComponentSwizzle::eIdentity
-                            ),
-                    vk::ImageSubresourceRange(
-                            vk::ImageAspectFlagBits::eColor,
-                            0,
-                            1,
-                            0,
-                            1
-                            )
-                    ));
+            swapChainImagesViews[i] = logicalDevice->createImageViewUnique(
+                    vk::ImageViewCreateInfo(
+                            vk::ImageViewCreateFlags(),
+                            swapChainImages[i],
+                            vk::ImageViewType::e2D,
+                            swapChainImageFormat,
+                            vk::ComponentMapping(
+                                    vk::ComponentSwizzle::eIdentity,
+                                    vk::ComponentSwizzle::eIdentity,
+                                    vk::ComponentSwizzle::eIdentity,
+                                    vk::ComponentSwizzle::eIdentity),
+                            vk::ImageSubresourceRange(
+                                    vk::ImageAspectFlagBits::eColor,
+                                    0,
+                                    1,
+                                    0,
+                                    1)));
         } catch (std::exception& error) {
-            throw VulkanError(fmt::format("Failed to get swap chain image view at index {}!", i).c_str());
+            throw VulkanError(
+                    fmt::format(
+                            "Failed to get swap chain image view at index {}!",
+                            i).c_str());
         }
     }
 }
@@ -443,10 +546,33 @@ void VulkanWindow::createImageViews() {
 void VulkanWindow::createGraphicsPipeline() {
     auto vertShaderCode = readFile("rendevox-base/vulkanWindow/shaders/shader.vert.spv");
     auto fragShaderCode = readFile("rendevox-base/vulkanWindow/shaders/shader.frag.spv");
+
+    vk::UniqueShaderModule vertShaderModule = createShaderModule(vertShaderCode);
+    vk::UniqueShaderModule fragShaderModule = createShaderModule(fragShaderCode);
+
+    vk::PipelineShaderStageCreateInfo shaderStages[] = {
+            vk::PipelineShaderStageCreateInfo(
+                    vk::PipelineShaderStageCreateFlags(),
+                    vk::ShaderStageFlagBits::eVertex,
+                    vertShaderModule.operator*(),
+                    "main",
+                    nullptr),
+            vk::PipelineShaderStageCreateInfo(
+                    vk::PipelineShaderStageCreateFlags(),
+                    vk::ShaderStageFlagBits::eFragment,
+                    fragShaderModule.operator*(),
+                    "main",
+                    nullptr)
+    };
+
+    vertShaderModule.release();
+    fragShaderModule.release();
 }
 
 std::vector<char> VulkanWindow::readFile(const std::string& filename) {
-    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+    std::ifstream file(
+            filename,
+            std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
         throw RendevoxError("Failed to open file!");
@@ -456,11 +582,29 @@ std::vector<char> VulkanWindow::readFile(const std::string& filename) {
     std::vector<char> buffer(fileSize);
 
     file.seekg(0);
-    file.read(buffer.data(), std::streamsize(fileSize));
+    file.read(
+            buffer.data(),
+            std::streamsize(fileSize));
 
     file.close();
 
     return buffer;
+}
+
+vk::UniqueShaderModule VulkanWindow::createShaderModule(const std::vector<char>& code) {
+    vk::UniqueShaderModule shaderModule;
+    try {
+        shaderModule = logicalDevice->createShaderModuleUnique(
+                vk::ShaderModuleCreateInfo(
+                        vk::ShaderModuleCreateFlags(),
+                        code.size(),
+                        reinterpret_cast<const uint32_t*>(code.data()),
+                        nullptr));
+    } catch (std::exception& error) {
+        throw VulkanError("Failed to create shader module!");
+    }
+
+    return shaderModule;
 }
 
 VulkanWindow::~VulkanWindow() {

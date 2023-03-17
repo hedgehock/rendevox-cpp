@@ -62,6 +62,7 @@ private:
     queueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     swapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
     vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
+    vk::UniqueShaderModule createShaderModule(const std::vector<char>& code);
 
     static vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
     static vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);
