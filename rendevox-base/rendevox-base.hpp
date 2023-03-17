@@ -9,6 +9,7 @@
 #include <optional>
 #include <limits>
 #include <fmt/format.h>
+#include <fstream>
 
 #include "glad/glad.hpp"
 
