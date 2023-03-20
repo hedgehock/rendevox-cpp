@@ -44,6 +44,7 @@ private:
     vk::Extent2D swapChainExtent;
     std::vector<vk::UniqueImageView> swapChainImagesViews;
 
+    vk::UniqueRenderPass renderPass;
     vk::UniquePipelineLayout pipelineLayout;
 
     void initWindow(Rendevox::Window& windowInfo);
@@ -56,6 +57,7 @@ private:
     void createLogicalDevice();
     void createSwapChain();
     void createImageViews();
+    void createRenderPass();
     void createGraphicsPipeline();
 
     bool isDeviceSuitable(vk::PhysicalDevice device);

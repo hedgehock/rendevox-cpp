@@ -51,6 +51,7 @@ void VulkanWindow::initVulkan() {
     createLogicalDevice();
     createSwapChain();
     createImageViews();
+    createRenderPass();
     createGraphicsPipeline();
 }
 
@@ -586,13 +587,13 @@ void VulkanWindow::createGraphicsPipeline() {
 
     vk::PipelineRasterizationStateCreateInfo rasterizer;
     rasterizer.sType = vk::StructureType::ePipelineRasterizationStateCreateInfo;
-        rasterizer.depthClampEnable = VK_FALSE;
-        rasterizer.rasterizerDiscardEnable = VK_FALSE;
-        rasterizer.polygonMode = vk::PolygonMode::eFill;
-        rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = vk::CullModeFlagBits::eBack;
-        rasterizer.frontFace = vk::FrontFace::eClockwise;
-        rasterizer.depthBiasEnable = VK_FALSE;
+    rasterizer.depthClampEnable = VK_FALSE;
+    rasterizer.rasterizerDiscardEnable = VK_FALSE;
+    rasterizer.polygonMode = vk::PolygonMode::eFill;
+    rasterizer.lineWidth = 1.0f;
+    rasterizer.cullMode = vk::CullModeFlagBits::eBack;
+    rasterizer.frontFace = vk::FrontFace::eClockwise;
+    rasterizer.depthBiasEnable = VK_FALSE;
 
     vk::PipelineMultisampleStateCreateInfo multisampling{};
     multisampling.sType = vk::StructureType::ePipelineMultisampleStateCreateInfo;
@@ -633,8 +634,7 @@ void VulkanWindow::createGraphicsPipeline() {
             0,
             nullptr,
             0,
-            nullptr
-            );
+            nullptr);
 
     try {
         pipelineLayout = logicalDevice->createPipelineLayoutUnique(pipelineLayoutInfo);
@@ -684,8 +684,44 @@ vk::UniqueShaderModule VulkanWindow::createShaderModule(const std::vector<char>&
     return shaderModule;
 }
 
+void VulkanWindow::createRenderPass() {
+    vk::AttachmentDescription colorAttachment = vk::AttachmentDescription(
+            vk::AttachmentDescriptionFlags(),
+            swapChainImageFormat,
+            vk::SampleCountFlagBits::e1,
+            vk::AttachmentLoadOp::eClear,
+            vk::AttachmentStoreOp::eStore,
+            vk::AttachmentLoadOp::eDontCare,
+            vk::AttachmentStoreOp::eDontCare,
+            vk::ImageLayout::eUndefined,
+            vk::ImageLayout::ePresentSrcKHR);
+
+    vk::AttachmentReference colorAttachmentRef = vk::AttachmentReference(
+            0,
+            vk::ImageLayout::eColorAttachmentOptimal);
+
+    vk::SubpassDescription subpass{};
+    subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
+    subpass.colorAttachmentCount = 1;
+    subpass.pColorAttachments = &colorAttachmentRef;
+
+    try {
+        renderPass = logicalDevice->createRenderPassUnique(
+                vk::RenderPassCreateInfo(
+                        vk::RenderPassCreateFlags(),
+                        1,
+                        &colorAttachment,
+                        1,
+                        &subpass));
+    } catch (std::exception& error) {
+        throw VulkanError("Failed to create render pass!");
+    }
+}
+
 VulkanWindow::~VulkanWindow() {
     pipelineLayout.release();
+
+    renderPass.release();
 
     swapChainImagesViews.data()->release();
 
